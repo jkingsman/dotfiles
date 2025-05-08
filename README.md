@@ -19,3 +19,5 @@ It's a pretty vanilla setup, and will run gracefully on just about any Bash vers
 * `minimalwakelock.html` is a file for keeping the screen awak.
 
 `qol` contains some quality of life files -- fonts, images, some helper scripts I use every now and again.
+
+Quick provision: `curl -s https://raw.githubusercontent.com/jkingsman/dotfiles/refs/heads/main/qol/provision.sh | bash`

@@ -162,7 +162,7 @@ alias ls="ls ${colorflag}"
 alias lsl="ls ${colorflag} -lath"
 
 # ------------------------------------------------------------------
-# NVM, RVM, and utility enablement
+# NVM, RVM, pyenv, and utility enablement
 # ------------------------------------------------------------------
 if [ -d "${HOME}/.nvm/.git" ]; then
 	export NVM_DIR="$HOME/.nvm"
@@ -175,6 +175,9 @@ export PATH="$PATH:$HOME/.rvm/bin:$HOME/.local/bin"
 export PATH=/Applications/SnowSQL.app/Contents/MacOS:$PATH
 PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/.local/bin:$PATH"
 
+export PYENV_ROOT="$HOME/.pyenv"
+[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - bash)"
 
 # ------------------------------------------------------------------
 # Bash backups

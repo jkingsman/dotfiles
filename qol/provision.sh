@@ -13,92 +13,82 @@ fi
 # Detect OS
 detect_os() {
   if [ -f /etc/os-release ]; then
-    # freedesktop.org and systemd
     . /etc/os-release
     OS=$NAME
     VER=$VERSION_ID
-  elif type lsb_release >/dev/null 2>&1; then
-    # linuxbase.org
+  elif command -v lsb_release >/dev/null 2>&1; then
     OS=$(lsb_release -si)
     VER=$(lsb_release -sr)
   elif [ -f /etc/lsb-release ]; then
-    # For some versions of Debian/Ubuntu without lsb_release command
     . /etc/lsb-release
     OS=$DISTRIB_ID
     VER=$DISTRIB_RELEASE
   elif [ -f /etc/debian_version ]; then
-    # Older Debian/Ubuntu/etc.
     OS=Debian
-    VER=$(cat /etc/debian_version)
-  elif [ -f /etc/centos-release ]; then
-    # Older CentOS
-    OS=CentOS
-    VER=$(cat /etc/centos-release | sed 's/^.*release //;s/ (Fin.*$//')
-  elif [ -f /etc/redhat-release ]; then
-    # Older Red Hat, CentOS, etc.
-    OS=RedHat
-    VER=$(cat /etc/redhat-release | sed 's/^.*release //;s/ (Fin.*$//')
+    read -r VER < /etc/debian_version
+  elif [ -f /etc/centos-release ] || [ -f /etc/redhat-release ]; then
+    FILE=/etc/centos-release
+    [ -f /etc/redhat-release ] && FILE=/etc/redhat-release
+    OS=$(awk '{print $1}' "$FILE")
+    VER=$(sed -E 's/.*release ([0-9.]+).*/\1/' "$FILE")
   elif [ -f /etc/alpine-release ]; then
-    # Alpine Linux
     OS=Alpine
-    VER=$(cat /etc/alpine-release)
+    read -r VER < /etc/alpine-release
   else
-    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
     OS=$(uname -s)
     VER=$(uname -r)
   fi
-
   echo "Detected OS: $OS $VER"
 }
+
 
 # Setup sudo without password for current user
 setup_sudo_nopasswd() {
   echo "=== Setting up sudo without password for current user ==="
+  SUDOERS_FILE="/etc/sudoers.d/$(whoami)"
 
   case "$OS" in
-    "Ubuntu"|"Debian"|*"Linux Mint"*)
-      echo "$(whoami) ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$(whoami) > /dev/null
-      sudo chmod 0440 /etc/sudoers.d/$(whoami)
+    Ubuntu|Debian|*"Linux Mint"*|CentOS|RedHat|Amazon*)
       ;;
-    "Alpine"*)
-      # Alpine might not have sudo installed by default
-      if ! command -v sudo &> /dev/null; then
-        echo "Installing sudo on Alpine..."
-        su -c "apk add sudo"
-      fi
-      echo "$(whoami) ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$(whoami) > /dev/null
-      sudo chmod 0440 /etc/sudoers.d/$(whoami)
-      ;;
-    "CentOS"|"RedHat"|"Amazon"*)
-      echo "$(whoami) ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/$(whoami) > /dev/null
-      sudo chmod 0440 /etc/sudoers.d/$(whoami)
+    Alpine*)
+      command -v sudo >/dev/null 2>&1 || { echo "Installing sudo on Alpine..."; su -c "apk add sudo"; }
       ;;
     *)
       echo "Unsupported OS for sudo configuration: $OS"
       exit 1
       ;;
   esac
+
+  echo "$(whoami) ALL=(ALL) NOPASSWD:ALL" | sudo tee "$SUDOERS_FILE" >/dev/null
+  sudo chmod 0440 "$SUDOERS_FILE"
 }
+
 
 # Install essential packages
 install_essentials() {
   echo "=== Installing essential packages ==="
 
   case "$OS" in
-    "Ubuntu"|"Debian"|*"Linux Mint"*)
+    Ubuntu|Debian|*"Linux Mint"*)
       sudo apt update
       sudo apt install -y curl openssh-server git build-essential
       ;;
-    "Alpine"*)
+    Alpine*)
       sudo apk update
       sudo apk add curl openssh git build-base linux-headers
       ;;
-    "CentOS"|"RedHat"|"Amazon"*)
-      if command -v dnf &> /dev/null; then
-        sudo dnf install -y curl openssh-server git make gcc gcc-c++ kernel-devel
+    Amazon*|CentOS|RedHat)
+      PKG_MGR=$(command -v dnf >/dev/null 2>&1 && echo dnf || echo yum)
+
+      if [[ "$OS" == Amazon* ]]; then
+        # Amazon Linux 2023: skip installing curl to avoid conflicts
+        echo "Amazon Linux detected: skipping curl install (curl-minimal already provided)"
+        PACKAGES="openssh-server git make gcc gcc-c++ kernel-devel util-linux-user"
       else
-        sudo yum install -y curl openssh-server git make gcc gcc-c++ kernel-devel
+        PACKAGES="curl openssh-server git make gcc gcc-c++ kernel-devel util-linux-user"
       fi
+
+      sudo $PKG_MGR install -y $PACKAGES
       ;;
     *)
       echo "Unsupported OS for package installation: $OS"
@@ -107,23 +97,20 @@ install_essentials() {
   esac
 }
 
-# Configure SSH
+
 configure_ssh() {
   echo "=== Configuring SSH ==="
-  # Create .ssh directory if it doesn't exist
-  mkdir -p ~/.ssh
-  chmod 700 ~/.ssh
 
-  # Download authorized keys from GitHub
+  mkdir -p ~/.ssh && chmod 700 ~/.ssh
+
   echo "=== Downloading authorized keys from GitHub ==="
   curl -s https://github.com/jkingsman.keys > ~/.ssh/authorized_keys
   chmod 600 ~/.ssh/authorized_keys
 
-  # Configure SSH server for security
   echo "=== Securing SSH server configuration ==="
   sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 
-  sudo tee /etc/ssh/sshd_config > /dev/null << EOF
+  sudo bash -c 'cat > /etc/ssh/sshd_config' << EOF
 # SSH Server Configuration
 Port 22
 Protocol 2
@@ -146,43 +133,25 @@ AcceptEnv LANG LC_*
 Subsystem sftp /usr/lib/openssh/sftp-server
 EOF
 
-  # Restart SSH service (handling different service managers and service names)
   echo "=== Restarting SSH service ==="
+  SERVICE_NAME=""
 
-  # Check which SSH service name exists
-  SSH_SERVICE=""
-  if systemctl list-units --all | grep -q "sshd.service"; then
-    SSH_SERVICE="sshd"
-  elif systemctl list-units --all | grep -q "ssh.service"; then
-    SSH_SERVICE="ssh"
-  fi
-
-  # Restart using the appropriate method and service name
-  if [ -n "$SSH_SERVICE" ] && command -v systemctl &> /dev/null; then
-    echo "Using systemctl to restart $SSH_SERVICE service"
-    sudo systemctl restart $SSH_SERVICE
-  elif command -v service &> /dev/null; then
-    # Try both service names with the service command
-    if service sshd status &>/dev/null; then
-      echo "Using service command to restart sshd"
-      sudo service sshd restart
-    elif service ssh status &>/dev/null; then
-      echo "Using service command to restart ssh"
-      sudo service ssh restart
-    else
-      echo "SSH service not found with 'service' command"
+  for candidate in ssh sshd; do
+    if systemctl status "$candidate" &>/dev/null; then
+      SERVICE_NAME=$candidate
+      sudo systemctl restart "$SERVICE_NAME" && return
+    elif service "$candidate" status &>/dev/null; then
+      SERVICE_NAME=$candidate
+      sudo service "$SERVICE_NAME" restart && return
+    elif [ -x "/etc/init.d/$candidate" ]; then
+      SERVICE_NAME=$candidate
+      sudo "/etc/init.d/$SERVICE_NAME" restart && return
     fi
-  elif [ -f /etc/init.d/sshd ]; then
-    echo "Using init.d script to restart sshd"
-    sudo /etc/init.d/sshd restart
-  elif [ -f /etc/init.d/ssh ]; then
-    echo "Using init.d script to restart ssh"
-    sudo /etc/init.d/ssh restart
-  else
-    echo "WARNING: Unable to restart SSH service - it may need to be restarted manually"
-    echo "Common service names are 'ssh' or 'sshd'"
-  fi
+  done
+
+  echo "WARNING: Unable to restart SSH service automatically. Please restart manually."
 }
+
 
 # Add private key
 add_private_key() {
@@ -198,29 +167,23 @@ update_packages() {
   echo "=== Updating all packages ==="
 
   case "$OS" in
-    "Ubuntu"|"Debian"|*"Linux Mint"*)
-      sudo apt update
-      sudo apt upgrade -y
-      sudo apt autoremove -y
+    Ubuntu|Debian|*"Linux Mint"*)
+      sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
       ;;
-    "Alpine"*)
-      sudo apk update
-      sudo apk upgrade
+    Alpine*)
+      sudo apk update && sudo apk upgrade
       ;;
-    "CentOS"|"RedHat"|"Amazon"*)
-      if command -v dnf &> /dev/null; then
-        sudo dnf upgrade -y
-        sudo dnf autoremove -y
-      else
-        sudo yum update -y
-        sudo yum clean all
-      fi
+    CentOS|RedHat|Amazon*)
+      PKG_MGR=$(command -v dnf >/dev/null 2>&1 && echo dnf || echo yum)
+      sudo $PKG_MGR upgrade -y
+      [ "$PKG_MGR" = "dnf" ] && sudo dnf autoremove -y || sudo yum clean all
       ;;
     *)
       echo "Unsupported OS for package updates: $OS"
       ;;
   esac
 }
+
 
 # Install newer Bash
 install_bash() {
@@ -232,151 +195,95 @@ install_bash() {
   cd bash-5.2
 
   case "$OS" in
-    "Ubuntu"|"Debian"|*"Linux Mint"*|"CentOS"|"RedHat"|"Amazon"*)
-      ./configure --prefix=/usr/local && make && sudo make install
-      ;;
-    "Alpine"*)
-      # Alpine might need additional dependencies
+    Alpine*)
       sudo apk add ncurses-dev readline-dev
-      ./configure --prefix=/usr/local && make && sudo make install
       ;;
-    *)
-      echo "Proceeding with generic bash compilation..."
-      ./configure --prefix=/usr/local && make && sudo make install
+    Ubuntu|Debian|*"Linux Mint"*|CentOS|RedHat|Amazon*|*)
+      # no extra dependencies for these
       ;;
   esac
 
-  # Add the new shell to the list of legit shells
-  echo "=== Adding new Bash to allowed shells ==="
-  echo "/usr/local/bin/bash" | sudo tee -a /etc/shells
+  ./configure --prefix=/usr/local && make && sudo make install
 
-  # Change the shell for the user
+  echo "=== Adding new Bash to allowed shells ==="
+  grep -qx "/usr/local/bin/bash" /etc/shells || echo "/usr/local/bin/bash" | sudo tee -a /etc/shells
+
   echo "=== Changing default shell to new Bash ==="
-  sudo chsh -s /usr/local/bin/bash $(whoami)
+  USERNAME=$(whoami)
+  sudo chsh -s /usr/local/bin/bash "$USERNAME"
 }
 
 # Clone dotfiles and run unpack
 setup_dotfiles() {
   echo "=== Cloning dotfiles repository ==="
-  cd ~
-  git clone git@github.com:jkingsman/dotfiles.git
+  DOTFILES_DIR=~/dotfiles
+  if [ -d "$DOTFILES_DIR" ]; then
+    echo "Dotfiles directory already exists, pulling latest changes..."
+    git -C "$DOTFILES_DIR" pull
+  else
+    git clone https://github.com/jkingsman/dotfiles.git "$DOTFILES_DIR"
+  fi
 
   echo "=== Running dotfiles unpack script ==="
-  cd ~
-  ~/dotfiles/.unpack
+  chmod -R +x "$DOTFILES_DIR"
+  (cd "$DOTFILES_DIR" && ./.unpack)
+  source ~/.bashrc_personal
 }
 
 # Install Python 3.10
 install_python() {
-  echo "=== Installing Python 3.10 ==="
+  PYTHON_VERSION=${1:-3.12.0}
+  echo "=== Installing Python $PYTHON_VERSION via pyenv ==="
 
-  case "$OS" in
-    "Ubuntu"|"Debian"|*"Linux Mint"*)
-      # For Ubuntu 20.04+ and newer Debian
-      if command -v add-apt-repository &> /dev/null; then
+  install_pyenv_dependencies() {
+    case "$OS" in
+      Ubuntu|Debian|*"Linux Mint"*)
         sudo apt update
-        sudo apt install -y software-properties-common
-        sudo add-apt-repository -y ppa:deadsnakes/ppa
-        sudo apt update
-        sudo apt install -y python3.10 python3.10-venv python3.10-dev python3-pip
-        sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
-      else
-        # Fallback for older Debian without PPAs
-        echo "Building Python 3.10 from source..."
-        sudo apt install -y build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libreadline-dev libffi-dev wget
-        cd /tmp
-        wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz
-        tar -xf Python-3.10.0.tgz
-        cd Python-3.10.0
-        ./configure --enable-optimizations
-        make -j $(nproc)
-        sudo make altinstall
-        # Create symlinks
-        sudo ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
-        sudo ln -sf /usr/local/bin/pip3.10 /usr/local/bin/pip3
-      fi
-      ;;
-    "Alpine"*)
-      # Alpine typically uses apk
-      if apk info -e python3 | grep -q '3.10'; then
-        sudo apk add python3 py3-pip
-      else
-        # Build from source if 3.10 is not in repositories
-        sudo apk add build-base zlib-dev readline-dev openssl-dev libffi-dev
-        cd /tmp
-        wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz
-        tar -xf Python-3.10.0.tgz
-        cd Python-3.10.0
-        ./configure --enable-optimizations --prefix=/usr/local
-        make -j $(nproc)
-        sudo make altinstall
-        # Create symlinks
-        sudo ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
-        sudo ln -sf /usr/local/bin/pip3.10 /usr/local/bin/pip3
-      fi
-      ;;
-    "CentOS"|"RedHat"|"Amazon"*)
-      # CentOS/RHEL typically uses dnf/yum
-      if command -v dnf &> /dev/null; then
-        sudo dnf install -y epel-release
-        sudo dnf install -y python3.10 python3.10-devel python3-pip || {
-          # If package not found, build from source
-          sudo dnf install -y gcc zlib-devel openssl-devel readline-devel libffi-devel
-          cd /tmp
-          wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz
-          tar -xf Python-3.10.0.tgz
-          cd Python-3.10.0
-          ./configure --enable-optimizations
-          make -j $(nproc)
-          sudo make altinstall
-          # Create symlinks
-          sudo ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
-          sudo ln -sf /usr/local/bin/pip3.10 /usr/local/bin/pip3
-        }
-      else
-        # Older CentOS with yum
-        sudo yum install -y epel-release
-        sudo yum install -y python3.10 python3.10-devel python3-pip || {
-          # If package not found, build from source
-          sudo yum install -y gcc zlib-devel openssl-devel readline-devel libffi-devel
-          cd /tmp
-          wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz
-          tar -xf Python-3.10.0.tgz
-          cd Python-3.10.0
-          ./configure --enable-optimizations
-          make -j $(nproc)
-          sudo make altinstall
-          # Create symlinks
-          sudo ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
-          sudo ln -sf /usr/local/bin/pip3.10 /usr/local/bin/pip3
-        }
-      fi
-      ;;
-    *)
-      echo "Unsupported OS for Python installation: $OS"
-      echo "Attempting generic Python build..."
-      cd /tmp
-      wget https://www.python.org/ftp/python/3.10.0/Python-3.10.0.tgz
-      tar -xf Python-3.10.0.tgz
-      cd Python-3.10.0
-      ./configure --enable-optimizations
-      make -j $(nproc)
-      sudo make altinstall
-      # Create symlinks
-      sudo ln -sf /usr/local/bin/python3.10 /usr/local/bin/python3
-      sudo ln -sf /usr/local/bin/pip3.10 /usr/local/bin/pip3
-      ;;
-  esac
+        sudo apt install -y make build-essential libssl-dev zlib1g-dev \
+          libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+          libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+        ;;
+      Alpine*)
+        sudo apk add build-base libffi-dev openssl-dev zlib-dev bzip2-dev readline-dev sqlite-dev xz-dev tk-dev
+        ;;
+      CentOS|RedHat|Amazon*)
+        PKG_MGR=$(command -v dnf >/dev/null 2>&1 && echo dnf || echo yum)
+        sudo $PKG_MGR install -y gcc make zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel \
+          openssl-devel xz xz-devel libffi-devel wget
+        ;;
+      *)
+        echo "Unsupported OS for automatic dependency install. Please install pyenv build dependencies manually."
+        ;;
+    esac
+  }
 
-  # Verify installation
-  if command -v python3.10 &> /dev/null; then
-    echo "Python 3.10 installed successfully: $(python3.10 --version)"
-  elif command -v python3 &> /dev/null && python3 --version | grep -q "3.10"; then
-    echo "Python 3.10 installed successfully: $(python3 --version)"
+  if ! command -v pyenv >/dev/null; then
+    echo "=== Installing pyenv ==="
+    curl https://pyenv.run | bash
+
+    export PATH="$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
   else
-    echo "WARNING: Python 3.10 installation may not have succeeded. Please check manually."
+    echo "pyenv already installed: $(pyenv --version)"
   fi
+
+  install_pyenv_dependencies
+
+  export PATH="$HOME/.pyenv/bin:$PATH"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)"
+
+  if pyenv versions | grep -q "$PYTHON_VERSION"; then
+    echo "Python $PYTHON_VERSION already installed with pyenv."
+  else
+    pyenv install "$PYTHON_VERSION"
+  fi
+
+  pyenv global "$PYTHON_VERSION"
+  echo "Python $(python --version) installed and set as default via pyenv."
 }
+
 
 check_apps() {
     echo "System Tools and Applications Check"
