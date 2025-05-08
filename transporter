@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+
+echo "#=============================="
+echo ""
+echo "# Freshen up directory structure"
+echo "cd ~/data"
+echo "rm -rf dotfiles"
+echo "mkdir dotfiles"
+echo "cd dotfiles"
+echo ""
+
+echo "# Dump file contents"
+declare -a files=(".bashrc_personal" ".atl_bashrc" ".bash_aliases" ".bash_env" ".bash_prompt" ".inputrc" ".vimrc" ".unpack" "minimalwakelock.html")
+for i in "${files[@]}"
+do
+    echo "# ${i}"
+    echo "echo "$(cat ${i} | base64)" | base64 -d >> ${i}"
+    echo "chmod +x ${i}"
+    echo ""
+done
+
+echo "# Setup file installation"
+
+# delete historical
+echo "cd ~/data"
+echo "rm -rf setup.sh"
+
+echo "cd ~/data/dotfiles" # so we can . ./da <tab etc.>
+echo "echo \"#!/usr/bin/env bash\" >> setup.sh"
+echo "echo \"cd ~/data/dotfiles; ./.unpack; cd ~; source ~/.bashrc_personal; exec \${SHELL} -l\" >> setup.sh"
+echo "chmod +x setup.sh"
+
+echo ""
+echo "# Invoke setup script!"
+echo "cd ~"
+echo "source ~/data/dotfiles/setup.sh"
+echo "# good to go!"

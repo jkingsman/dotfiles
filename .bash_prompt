@@ -1,0 +1,254 @@
+#!/usr/bin/env bash
+
+# ------------------------------------------------------------------
+# Prompt configuration. See .inputrc for more meaningful work
+# ------------------------------------------------------------------
+
+# Shell prompt based on the Solarized Dark theme.
+# Screenshot: http://i.imgur.com/EkEtphC.png
+# Heavily inspired by @necolas’s prompt: https://github.com/necolas/dotfiles
+
+
+# iTerm → Profiles → Text → use Hasklig Extra Light with ligatures enabled
+# Triggers on:
+#    .*ERROR.*
+#    .*WARN.*
+#    http://.*\b
+#    http://.*\b
+# Colors: Tango Dark
+# Pointer: Focus follows mouse
+# Appearance: Dimming: Dim inactive panes
+# Font: Hasklig Extra Light with ligatures enabled
+# Cursor: box
+
+if [[ $COLORTERM = gnome-* && $TERM = xterm ]] && infocmp gnome-256color >/dev/null 2>&1; then
+    export TERM='gnome-256color';
+elif infocmp xterm-256color >/dev/null 2>&1; then
+    export TERM='xterm-256color';
+fi;
+
+prompt_git() {
+    # export NO_GIT_PROMPT=true to skip bash prompt
+    if [[ -v NO_GIT_PROMPT ]]; then
+        echo "[SKIP]";
+        return;
+    fi
+
+    local s='';
+    local branchName='';
+
+    # Check if the current directory is in a Git repository.
+    if [ $(git rev-parse --is-inside-work-tree &>/dev/null; echo "${?}") == '0' ]; then
+
+        # check if the current directory is in .git before running git checks
+        if [ "$(git rev-parse --is-inside-git-dir 2> /dev/null)" == 'false' ]; then
+
+            # Ensure the index is up to date.
+            git update-index --really-refresh -q &>/dev/null;
+
+            # Check for uncommitted changes in the index.
+            if ! $(git diff --quiet --ignore-submodules --cached); then
+                s+='+';
+            fi;
+
+            # Check for unstaged changes.
+            if ! $(git diff-files --quiet --ignore-submodules --); then
+                s+='!';
+            fi;
+
+            # Check for untracked files.
+            if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+                s+='?';
+            fi;
+
+            # Check for stashed files.
+            if $(git rev-parse --verify refs/stash &>/dev/null); then
+                s+='$+';
+                stashCount=$(git stash list | wc -l | awk '{print $1}');
+                s+="${stashCount}"
+            fi;
+
+        fi;
+
+        # Get the short symbolic ref.
+        # If HEAD isn’t a symbolic ref, get the short SHA for the latest commit
+        # Otherwise, just give up.
+        branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
+            git rev-parse --short HEAD 2> /dev/null || \
+            echo '(unknown)')";
+
+        [ -n "${s}" ] && s=" [${s}]";
+
+        echo -e "${1}${branchName}${2}${s}";
+    else
+        return;
+    fi;
+}
+
+
+if tput setaf 1 &> /dev/null; then
+    tput sgr0; # reset colors
+    bold=$(tput bold);
+    reset=$(tput sgr0);
+    italic=$(tput sitm);
+    # Solarized colors, taken from http://git.io/solarized-colors.
+    black=$(tput setaf 0);
+    blue=$(tput setaf 33);
+    cyan=$(tput setaf 37);
+    green=$(tput setaf 64);
+    orange=$(tput setaf 166);
+    purple=$(tput setaf 125);
+    red=$(tput setaf 124);
+    violet=$(tput setaf 61);
+    white=$(tput setaf 15);
+    yellow=$(tput setaf 136);
+    gray=$(tput setaf 255);
+    lightgray=$(tput setaf 240);
+else
+    bold='';
+    italic="\e[3m";
+    reset="\e[0m";
+    black="\e[1;30m";
+    blue="\e[1;34m";
+    cyan="\e[1;36m";
+    green="\e[1;32m";
+    orange="\e[1;33m";
+    purple="\e[1;35m";
+    red="\e[1;31m";
+    violet="\e[1;35m";
+    white="\e[1;37m";
+    yellow="\e[1;33m";
+    gray="\e[1;37m";
+    lightgray="\e[1;90m";
+fi;
+
+# Highlight the user name when logged in as root.
+if [[ "${USER}" == "root" ]]; then
+    userStyle="${red}";
+else
+    userStyle="${orange}";
+fi;
+
+# Highlight the hostname when connected via SSH.
+if [[ "${SSH_TTY}" ]]; then
+    hostStyle="${bold}${red}";
+else
+    hostStyle="${yellow}";
+fi;
+
+get_is_atlas_on_vdi() {
+  if uname -srm | grep amzn > /dev/null 2>&1; then
+    if command -v atlas > /dev/null 2>&1; then
+      echo "${red}[VDI-atlas] "
+    else
+      echo "${blue}[VDI-standard] "
+    fi
+  fi
+}
+
+generate_prompt_body() {
+  local user="${USER}"
+  local is_atlas="$(get_is_atlas_on_vdi)"
+  local host="${HOSTNAME}"
+  # set path to pwd, or if it's the home directory, use ~
+  local path="${PWD}"
+  if [[ "$path" == "$HOME" || "$path" == "$HOME/"* ]]; then
+    path="~${path#$HOME}"
+  fi
+
+  local git_info="$(prompt_git "${white}${reset} on ${bold}${violet}" "${reset}${blue}")"
+
+  printf "${userStyle}%s${white}${reset} at ${bold}%s${hostStyle}%s${white}${reset} in ${bold}${green}%s%s${reset}" \
+    "$user" "$is_atlas" "$host" "$path" "$git_info"
+}
+
+get_right_prompt() {
+  local time_str="${lightgray}[$(date +'%T')L][$(date -u +'%T')Z][$(date +%s)]${reset}"
+
+  local colored_prompt="$(generate_prompt_body)"
+  # Strip ANSI escape codes
+  local plain_prompt="$(echo -e "$colored_prompt" | sed -r 's/\x1B\[[0-9;]*[mK]//g')"
+
+  local cols="${COLUMNS:-80}"
+  local left_len="${#plain_prompt}"
+  local time_len="$(echo -n "$time_str" | sed -r 's/\x1B\[[0-9;]*[mK]//g' | wc -c)"
+
+  local spaces=$(( cols - left_len - time_len )) # +N to account for control chars left in I guess? this was inconsistent with git/non-git dirs, so meh
+  [ "$spaces" -lt 1 ] && spaces=1
+
+  printf '%*s%s' "$spaces" '' "$time_str"
+}
+
+PS1="\[\033]0;\W\007\]\n"   # terminal title
+PS1+="${lightgray}[$(date +'%T')L][$(date -u +'%T')Z][$(date +%s)] ${bold}"
+PS1+="\[\$(generate_prompt_body)\]"
+# PS1+="\[\$(get_right_prompt)\]" # just keep a boring left-aligned prompt for now
+PS1+="${reset}\n"
+
+if [ -n "${NO_VI_MODE}" ]; then
+  PS1+="▲ "
+fi
+
+export PS1;
+
+PS2="\[${yellow}\]→ \[${reset}\]";
+export PS2;
+
+# command timing logic
+precmd() {
+    local st=$(HISTTIMEFORMAT='%s ' history 1 | awk '{print $2}');
+    if [[ -z "$STARTTIME" || (-n "$STARTTIME" && "$STARTTIME" -ne "$st") ]]; then
+        ENDTIME=$EPOCHSECONDS
+        STARTTIME=$st
+    else
+        ENDTIME=0
+    fi
+}
+
+__timeit() {
+  retval=$?
+  precmd;
+
+  # only whitespace if we have something to print
+  if ((ENDTIME - STARTTIME > 1)) || [ "$retval" != 0 ]; then
+    printf "\n"
+  fi
+
+  # did it take longer than 1s? if so, print
+  if ((ENDTIME - STARTTIME > 1)); then
+    seconds=$((ENDTIME - STARTTIME))
+    # convert $seconds to minutes and seconds
+    if ((seconds > 60)); then
+      minutes=$((seconds / 60))
+      seconds=$((seconds % 60))
+      printf "${lightgray}${italic}%${COLUMNS}b" "t=${minutes}m${seconds}s"
+    else
+      printf "${lightgray}${italic}%${COLUMNS}b" "t=${seconds}s"
+    fi
+  fi
+
+  if [ "$retval" != 0 ]; then
+    printf "${red}${italic}%${COLUMNS}s" "exit $retval"
+  fi
+
+  # only reset if we printed something
+  if ((ENDTIME - STARTTIME > 1)) || [ "$retval" != 0 ]; then
+    echo -e "${reset}"
+  fi
+
+  retval=0
+
+  # housekeeping to always enforce
+  export HISTCONTROL=ignoredups:ignorespace
+  export HISTFILESIZE=
+  export HISTSIZE=
+  export HISTFILE=~/.bash_history_eternal
+  export HISTTIMEFORMAT="[%F %T] "
+
+  # sync multishell history and use set +x so we don't get stuck in echo mode
+  set +x
+  history -a
+  history -c
+  history -r
+}
+PROMPT_COMMAND="__timeit"

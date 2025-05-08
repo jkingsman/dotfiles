@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+DIR="$(dirname "${BASH_SOURCE[0]}")"
+
+# place files
+declare -a files=(".bashrc_personal" ".bash_aliases" ".bash_env" ".bash_prompt" ".inputrc" ".git_alias" ".vimrc")
+for i in "${files[@]}"
+do
+   if test -e ~/$i; then
+      echo "Copying $i"
+      cp ~/$i $DIR/$i
+   else
+      echo "Didn't find $i; skipping"
+   fi
+done

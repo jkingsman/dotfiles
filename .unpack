@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+DIR="$(dirname "${BASH_SOURCE[0]}")"
+
+# place files
+declare -a files=(".bashrc_personal" ".bash_aliases" ".bash_env" ".bash_prompt" ".inputrc" ".git_alias" ".vimrc" ".profile")
+for i in "${files[@]}"
+do
+   if test -e "$DIR/$i"; then
+      echo "Copying $i"
+      cp $DIR/$i ~/$i
+   else
+      echo "Didn't find $i; skipping"
+   fi
+done
+
+# invoke from bashrc
+SCRIPT_CONTENTS="source ~/.bashrc_personal;return;"
+if ! grep ".bashrc_personal" ~/.bashrc > /dev/null 2>&1; then
+   echo "Loading .bashrc with personal RC invocation..."
+   echo $SCRIPT_CONTENTS >> ~/.bashrc
+   chmod +x ~/.bashrc
+else
+   echo "Found invocation in .bashrc; skipping..."
+fi

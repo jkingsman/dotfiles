@@ -1,0 +1,15 @@
+# include with
+# [include]
+#    path = ~/.git_alias
+
+[alias]
+	co = checkout
+    chp = cherry-pick
+	git = !exec git
+	unfuck = !git reset --hard @{u} && git clean -f -d
+        superunfuck = !git cherry-pick --abort; git rebase --abort; git reset --hard @{u} && git clean -f -d
+	serve = daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/
+        mergemaster = !git fetch origin master:master && git merge master
+        mergemain = !git fetch origin main:main && git merge main
+	recent = !git for-each-ref --sort=-committerdate refs/heads/ --count=10 --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
+	finmerge = !git add . && git commit --no-edit && git push

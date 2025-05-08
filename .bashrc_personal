@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+DIR="$(dirname "${BASH_SOURCE[0]}")/"
+
+# ------------------------------------------------------------------
+# Profiling
+# ------------------------------------------------------------------
+# PS4='+ $(gdate "+%s.%N")\011 '
+# exec 3>&2 2>/tmp/bashstart.$$.log
+# set -x
+
+# Run .atl_bashrc if it exists
+if [ -f "$DIR/.atl_bashrc" ]; then
+  source "$DIR/.atl_bashrc" 2>&1 >/dev/null
+fi
+
+# gimme dat prompt moo moo moo moo moo
+source "$DIR/.bash_prompt" 2>&1 >/dev/null
+
+# aliases
+source "$DIR/.bash_aliases" 2>&1 >/dev/null
+
+# bash and tools
+source "$DIR/.bash_env" 2>&1 >/dev/null
+
+# ------------------------------------------------------------------
+# YOU! SHALL NOT! APPEND!
+# ------------------------------------------------------------------
+return;
+
