@@ -20,4 +20,14 @@ It's a pretty vanilla setup, and will run gracefully on just about any Bash vers
 
 `qol` contains some quality of life files -- fonts, images, some helper scripts I use every now and again.
 
-Quick provision: `curl -s https://raw.githubusercontent.com/jkingsman/dotfiles/refs/heads/main/qol/provision.sh | bash`
+Quick provision:
+
+```
+curl -s https://raw.githubusercontent.com/jkingsman/dotfiles/refs/heads/main/qol/provision.sh | bash
+```
+
+Quick clone:
+
+```
+git clone https://github.com/jkingsman/dotfiles.git; cd dotfiles; ./.unpack; exec ${SHELL} -l;
+```

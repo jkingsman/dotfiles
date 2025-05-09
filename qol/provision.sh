@@ -16,30 +16,37 @@ detect_os() {
     . /etc/os-release
     OS=$NAME
     VER=$VERSION_ID
+    [ "$OS" = "Red Hat Enterprise Linux" ] && OS="RedHat"
   elif command -v lsb_release >/dev/null 2>&1; then
     OS=$(lsb_release -si)
     VER=$(lsb_release -sr)
+    [ "$OS" = "RedHatEnterpriseServer" ] && OS="RedHat"
   elif [ -f /etc/lsb-release ]; then
     . /etc/lsb-release
     OS=$DISTRIB_ID
     VER=$DISTRIB_RELEASE
+    [ "$OS" = "RedHatEnterpriseServer" ] && OS="RedHat"
   elif [ -f /etc/debian_version ]; then
     OS=Debian
-    read -r VER </etc/debian_version
-  elif [ -f /etc/centos-release ] || [ -f /etc/redhat-release ]; then
-    FILE=/etc/centos-release
-    [ -f /etc/redhat-release ] && FILE=/etc/redhat-release
-    OS=$(awk '{print $1}' "$FILE")
-    VER=$(sed -E 's/.*release ([0-9.]+).*/\1/' "$FILE")
+    read -r VER < /etc/debian_version
+  elif [ -f /etc/centos-release ]; then
+    read -r LINE < /etc/centos-release
+    OS=CentOS
+    VER=$(echo "$LINE" | sed -E 's/.*release ([0-9.]+).*/\1/')
+  elif [ -f /etc/redhat-release ]; then
+    read -r LINE < /etc/redhat-release
+    OS=RedHat
+    VER=$(echo "$LINE" | sed -E 's/.*release ([0-9.]+).*/\1/')
   elif [ -f /etc/alpine-release ]; then
     OS=Alpine
-    read -r VER </etc/alpine-release
+    read -r VER < /etc/alpine-release
   else
     OS=$(uname -s)
     VER=$(uname -r)
   fi
   echo "Detected OS: $OS $VER"
 }
+
 
 # Setup sudo without password for current user
 setup_sudo_nopasswd() {
@@ -224,7 +231,6 @@ setup_dotfiles() {
   echo "=== Running dotfiles unpack script ==="
   chmod -R +x "$DOTFILES_DIR"
   (cd "$DOTFILES_DIR" && ./.unpack)
-  source ~/.bashrc_personal
 }
 
 # Install Python 3.10
@@ -333,3 +339,4 @@ main() {
 }
 
 main
+exec ${SHELL} -l
