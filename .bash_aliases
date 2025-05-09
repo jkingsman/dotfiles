@@ -79,10 +79,70 @@ alias srv3="python -m SimpleHTTPServer || python -m http.server 8000 || python3 
 # ------------------------------------------------------------------
 # Networking
 # ------------------------------------------------------------------
-alias ip="dig +short myip.opendns.com @resolver1.opendns.com"
-alias localip="ipconfig getifaddr en0"
-alias ips="ifconfig -a | grep -o 'inet6\? \(addr:\)\?\s\?\(\(\([0-9]\+\.\)\{3\}[0-9]\+\)\|[a-fA-F0-9:]\+\)' | awk '{ sub(/inet6? (addr:)? ?/, \"\"); print }'"
-alias gateway='route get default | grep gateway | awk "{print $2}"'
+function ips() {
+  if command -v ip > /dev/null 2>&1; then
+    # Use `ip` if available (Linux, modern Unix)
+    ip -o addr show | awk '
+      {
+        iface = $2;
+        family = ($3 == "inet") ? "IPv4" : ($3 == "inet6" ? "IPv6" : $3);
+        ipaddr = $4;
+        type = (iface ~ /^(wlan|wl|wifi)/) ? "Wi-Fi" :
+               (iface ~ /^(eth|en)/) ? "Ethernet" : "Other";
+        print "Interface: " iface ", Type: " type ", " family ": " ipaddr;
+      }
+    '
+    # Get default gateway
+    gw=$(ip route | awk '/default/ {print $3}')
+    echo "Default Gateway: $gw"
+
+  elif command -v netstat > /dev/null 2>&1 && netstat -rn 2>/dev/null | grep -q '^default'; then
+    # Use netstat fallback (macOS, BSD)
+    ifconfig | awk '
+      /^[a-zA-Z0-9]/ { iface=$1; sub(/:/, "", iface); next }
+      /inet / {
+        type = (iface ~ /^(en|eth)/) ? "Ethernet" :
+               (iface ~ /^(wl|wifi)/) ? "Wi-Fi" : "Other";
+        print "Interface: " iface ", Type: " type ", IPv4: " $2
+      }
+      /inet6 / {
+        type = (iface ~ /^(en|eth)/) ? "Ethernet" :
+               (iface ~ /^(wl|wifi)/) ? "Wi-Fi" : "Other";
+        print "Interface: " iface ", Type: " type ", IPv6: " $2
+      }
+    '
+    gw=$(netstat -rn | awk '/^default/ {print $2; exit}')
+    echo "Default Gateway: $gw"
+
+  elif command -v ipconfig > /dev/null 2>&1; then
+    # macOS-specific fallback
+    for iface in $(networksetup -listallhardwareports | awk '/Device/ {print $2}'); do
+      ip=$(ipconfig getifaddr "$iface" 2>/dev/null)
+      if [ -n "$ip" ]; then
+        porttype=$(networksetup -listallhardwareports | awk -v dev="$iface" '
+          $0 ~ "Hardware Port" { port=$3 }
+          $0 ~ "Device: "dev { print port }
+        ')
+        echo "Interface: $iface, Type: ${porttype:-Unknown}, IPv4: $ip"
+      fi
+    done
+    gw=$(netstat -rn | awk '/^default/ {print $2; exit}')
+    echo "Default Gateway: $gw"
+
+  else
+    echo "No supported network tool (ip, ifconfig, ipconfig) found."
+    return 1
+  fi
+
+  # Fetch and display external IP
+  if command -v curl > /dev/null 2>&1; then
+    ext_ip=$(curl -s ipinfo.io/ip)
+    echo "External IP: $ext_ip"
+  else
+    echo "curl not found; cannot fetch external IP."
+  fi
+}
+
 # One of @janmoesen’s ProTip™s
 for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
   alias "${method}"="lwp-request -m '${method}'"
