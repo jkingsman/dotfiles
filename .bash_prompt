@@ -137,11 +137,11 @@ else
 fi;
 
 get_is_atlas_on_vdi() {
-  if [[ "$USER" != *kingsman* ]]; then
-    return
-  fi
-
   if uname -srm | grep amzn > /dev/null 2>&1; then
+    if [[ "$USER" != *jkingsman* ]]; then
+      return
+    fi
+
     if command -v atlas > /dev/null 2>&1; then
       echo "${red}[VDI-atlas] "
     else
@@ -189,8 +189,7 @@ get_right_prompt() {
 }
 
 PS1="\[\033]0;\W\007\]\n"   # terminal title
-PS1+="\[\$(generate_time)\] "
-PS1+="\[\$(generate_prompt_body)\]"
+PS1+="\[\$(generate_time)\] \[\$(generate_prompt_body)\]"
 # PS1+="\[\$(get_right_prompt)\]" # just keep a boring left-aligned prompt for now
 PS1+="${reset}\n"
 

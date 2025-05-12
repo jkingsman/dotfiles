@@ -11,11 +11,12 @@ echo "cd dotfiles"
 echo ""
 
 echo "# Dump file contents"
-declare -a files=(".bashrc_personal" ".atl_bashrc" ".bash_aliases" ".bash_env" ".bash_prompt" ".inputrc" ".vimrc" ".unpack" "minimalwakelock.html")
+declare -a files=(".bashrc_personal" ".bash_aliases" ".bash_env" ".bash_prompt" ".vimrc" ".unpack" "minimalwakelock.html")
 for i in "${files[@]}"
 do
     echo "# ${i}"
     echo "echo "$(cat ${i} | base64)" | base64 -d >> ${i}"
+    echo "echo "$(cat ~/.atl_bashrc | base64)" | base64 -d >> .atl_bashrc"
     echo "chmod +x ${i}"
     echo ""
 done

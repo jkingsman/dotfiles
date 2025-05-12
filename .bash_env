@@ -39,6 +39,13 @@ if (( major <= 4 )) || (( major == 4 && minor <= 4 )); then
     export NO_VI_MODE="true"
 fi
 
+if uname -srm | grep amzn > /dev/null 2>&1; then
+  if [[ "$USER" != *jkingsman* ]]; then
+    return
+  fi
+  export NO_VI_MODE="true"
+fi
+
 # Source the system inputrc if it exists
 if [ -f /etc/inputrc ]; then
   bind -f /etc/inputrc 2> /dev/null
@@ -47,11 +54,10 @@ fi
 if [ -z "${NO_VI_MODE}" ]; then
   set -o vi
   bind 'set show-mode-in-prompt on' 2> /dev/null
+  # Set vi mode indicators
+  bind 'set vi-ins-mode-string "∆ "' 2> /dev/null
+  bind 'set vi-cmd-mode-string "δ "' 2> /dev/null
 fi
-
-# Set vi mode indicators
-bind 'set vi-ins-mode-string "∆ "' 2> /dev/null
-bind 'set vi-cmd-mode-string "δ "' 2> /dev/null
 
 # Set bell style to visible
 bind 'set bell-style visible' 2> /dev/null
@@ -173,8 +179,10 @@ export PATH=/Applications/SnowSQL.app/Contents/MacOS:$PATH
 PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$HOME/.local/bin:$PATH"
 
 export PYENV_ROOT="$HOME/.pyenv"
-[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init - bash)"
+if [ -d "$PYENV_ROOT/bin" ]; then
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init --path)"
+fi
 
 # ------------------------------------------------------------------
 # Bash backups
