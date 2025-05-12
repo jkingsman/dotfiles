@@ -62,7 +62,7 @@ fi
 # Set bell style to visible
 bind 'set bell-style visible' 2> /dev/null
 
-# Force incremental search
+# Force incremental search -- typing a command and using up and down arrows to browse commands that start with the same prefix
 bind '"\e[A": history-search-backward' 2> /dev/null
 bind '"\e[B": history-search-forward' 2> /dev/null
 
@@ -188,7 +188,7 @@ fi
 # Bash backups
 # ------------------------------------------------------------------
 # Directory where backups will be stored
-HISTORY_BACKUP_DIR="$HOME/history_backups"
+HISTORY_BACKUP_DIR="$HOME/.bash_history.d"
 
 # Function to backup bash history
 backup_bash_history() {
