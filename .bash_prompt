@@ -150,6 +150,11 @@ get_is_atlas_on_vdi() {
   fi
 }
 
+generate_time() {
+  local time_str="${lightgray}[$(date +'%T')L][$(date -u +'%T')Z][$(date +%s)]${reset}"
+  echo "$time_str"
+}
+
 generate_prompt_body() {
   local user="${USER}"
   local is_atlas="$(get_is_atlas_on_vdi)"
@@ -162,7 +167,7 @@ generate_prompt_body() {
 
   local git_info="$(prompt_git "${white}${reset} on ${bold}${violet}" "${reset}${blue}")"
 
-  printf "${userStyle}%s${white}${reset} at ${bold}%s${hostStyle}%s${white}${reset} in ${bold}${green}%s%s${reset}" \
+  printf "${bold}${userStyle}%s${white}${reset} at ${bold}%s${hostStyle}%s${white}${reset} in ${bold}${green}%s%s${reset}" \
     "$user" "$is_atlas" "$host" "$path" "$git_info"
 }
 
@@ -184,7 +189,7 @@ get_right_prompt() {
 }
 
 PS1="\[\033]0;\W\007\]\n"   # terminal title
-PS1+="${lightgray}[$(date +'%T')L][$(date -u +'%T')Z][$(date +%s)] ${bold}"
+PS1+="\[\$(generate_time)\] "
 PS1+="\[\$(generate_prompt_body)\]"
 # PS1+="\[\$(get_right_prompt)\]" # just keep a boring left-aligned prompt for now
 PS1+="${reset}\n"
