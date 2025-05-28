@@ -157,6 +157,53 @@ alias where="find . | grep -i"
 alias searchcase="grep -rnw . -e"
 alias search="grep -irnw . -e" # case insensitive contents grep
 
+# pretty print command with escaped newlines, indents, etc.
+pretty_command() {
+    # Check if input is provided
+    if [ $# -eq 0 ]; then
+        echo "Usage: pretty_command 'your command with args and flags'"
+        return 1
+    fi
+
+    local cmd="$*"
+    local base_cmd=""
+    local result=""
+    local indent="    "
+    local in_base_cmd=true
+    
+    # Split the command into words
+    read -ra words <<< "$cmd"
+    
+    for word in "${words[@]}"; do
+        # Check if the word is a flag/switch (starts with - or --)
+        if [[ "$word" =~ ^- ]]; then
+            # If this is the first flag, end the base command section
+            if $in_base_cmd; then
+                in_base_cmd=false
+                base_cmd="${base_cmd% }"  # Remove trailing space
+                printf "%s \\\\\n" "$base_cmd"
+            else
+                # Add the previous flag line with continuation
+                printf "%s%s \\\\\n" "$indent" "$last_flag"
+            fi
+            last_flag="$word"
+        elif ! $in_base_cmd; then
+            # This is a value for the previous flag
+            last_flag="$last_flag $word"
+        else
+            # This is part of the base command
+            base_cmd="$base_cmd$word "
+        fi
+    done
+    
+    # Add the last flag without continuation
+    if ! $in_base_cmd; then
+        printf "%s%s\n" "$indent" "$last_flag"
+    else
+        printf "%s\n" "$base_cmd"
+    fi
+}
+
 # run a command n times (ntimes 50 curl example.com) or do it asynchronously (ntimes a 50 curl example.com)
 function ntimes() {
   local async=0
