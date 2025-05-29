@@ -3,4 +3,5 @@ echo "echo \"/9j/4AAQSkZJRgABAQEASABIAAD/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0
 
 echo "gsettings set org.mate.background picture-filename ~/bliss.jpg"
 echo "gsettings set org.mate.background picture-options stretched"
+echo "gsettings set org.gnome.desktop.background picture-uri file:///home/jkingsman/bliss.jpg"
 echo "echo \"Wallpaper set!\""

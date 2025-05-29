@@ -39,13 +39,6 @@ if (( major <= 4 )) || (( major == 4 && minor <= 4 )); then
     export NO_VI_MODE="true"
 fi
 
-if uname -srm | grep amzn > /dev/null 2>&1; then
-  if [[ "$USER" != *jkingsman* ]]; then
-    return
-  fi
-  export NO_VI_MODE="true"
-fi
-
 # Source the system inputrc if it exists
 if [ -f /etc/inputrc ]; then
   bind -f /etc/inputrc 2> /dev/null

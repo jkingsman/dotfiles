@@ -137,7 +137,7 @@ else
 fi;
 
 get_is_atlas_on_vdi() {
-  if uname -srm | grep amzn > /dev/null 2>&1; then
+  if [[ "$(uname)" != "Darwin" ]]; then
     if [[ "$USER" != *jkingsman* ]]; then
       return
     fi
