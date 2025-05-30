@@ -137,7 +137,7 @@ else
 fi;
 
 get_is_atlas_on_vdi() {
-  if [[ "$(uname)" != "Darwin" ]]; then
+  if uname -srm | grep amzn > /dev/null 2>&1; then
     if [[ "$USER" != *jkingsman* ]]; then
       return
     fi
@@ -204,7 +204,7 @@ export PS2;
 
 # command timing logic
 precmd() {
-    local st=$(HISTTIMEFORMAT='%s ' history 1 | awk '{print $2}');
+    local st=$(HISTTIMEFORMAT='%s ' history 1 | tr '\n' ' ' | awk '{print $2}');
     if [[ -z "$STARTTIME" || (-n "$STARTTIME" && "$STARTTIME" -ne "$st") ]]; then
         ENDTIME=$EPOCHSECONDS
         STARTTIME=$st
