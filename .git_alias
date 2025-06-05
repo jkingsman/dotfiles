@@ -13,3 +13,5 @@
         mergemain = !git fetch origin main:main && git merge main
 	recent = !git for-each-ref --sort=-committerdate refs/heads/ --count=10 --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
 	finmerge = !git add . && git commit --no-edit && git push
+	finrebase = !git add . && GIT_EDITOR=true git rebase --continue && git push --force
+	showdroppedstash = !git fsck --unreachable | grep commit | cut -d" " -f3 | xargs git log --merges --no-walk --grep=WIP
