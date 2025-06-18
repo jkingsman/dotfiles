@@ -197,8 +197,7 @@ main() {
   setup_dotfiles
   check_apps
 
-  echo "=== Provisioning complete! ==="
-  echo "You should log out and back in for all changes to take effect."
+  exec ${SHELL} -l
 }
 
 main
