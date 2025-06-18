@@ -151,6 +151,64 @@ install_python() {
   echo "Python $(python --version) installed and set as default via pyenv."
 }
 
+# Install quality-of-life packages
+install_qol_packages() {
+  echo "=== Installing quality-of-life packages ==="
+
+  # Install UV (Python package installer)
+  echo "=== Installing UV ==="
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.cargo/bin:$PATH"
+
+  # Install Poetry (Python dependency management)
+  echo "=== Installing Poetry ==="
+  curl -sSL https://install.python-poetry.org | python3 -
+  export PATH="$HOME/.local/bin:$PATH"
+
+  # Install NVM (Node Version Manager)
+  echo "=== Installing NVM ==="
+  curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+  [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+
+  # Install Node.js v22 using NVM
+  echo "=== Installing Node.js v22 ==="
+  nvm install 22
+  nvm use 22
+  nvm alias default 22
+
+  # Install Yarn for JS dependency management
+  echo "=== Installing Yarn ==="
+  npm install -g yarn
+
+  # Install Java (OpenJDK 21)
+  echo "=== Installing Java (OpenJDK 21) ==="
+  sudo apt update
+  sudo apt install -y openjdk-21-jdk
+
+  # Install Docker
+  echo "=== Installing Docker ==="
+  sudo apt-get update
+  sudo apt-get install -y ca-certificates curl
+  sudo install -m 0755 -d /etc/apt/keyrings
+  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+  sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+  # Add the repository to Apt sources:
+  echo \
+    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+  sudo apt-get update
+  sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+  # Add current user to docker group
+  sudo usermod -aG docker $USER
+  echo "NOTE: You'll need to log out and back in for docker group membership to take effect"
+}
+
 check_apps() {
   echo "System Tools and Applications Check"
   echo "===================================="
@@ -195,9 +253,12 @@ main() {
   install_python
   install_bash
   setup_dotfiles
+  install_qol_packages
   check_apps
 
-  exec ${SHELL} -l
+  echo "=== Provisioning complete! ==="
+  echo "You should log out and back in for all changes to take effect."
+  echo "NOTE: Docker group membership requires a logout/login to take effect."
 }
 
 main
