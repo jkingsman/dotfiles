@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Multi-OS Provisioning Script for Ubuntu, Debian, Alpine Linux, CentOS/Amazon Linux
+# Provisioning Script for Ubuntu and Debian
 
 # Exit on error
 set -e
@@ -10,63 +10,10 @@ if [ "$(id -u)" -eq 0 ]; then
   exit 1
 fi
 
-# Detect OS
-detect_os() {
-  if [ -f /etc/os-release ]; then
-    . /etc/os-release
-    OS=$NAME
-    VER=$VERSION_ID
-    [ "$OS" = "Red Hat Enterprise Linux" ] && OS="RedHat"
-  elif command -v lsb_release >/dev/null 2>&1; then
-    OS=$(lsb_release -si)
-    VER=$(lsb_release -sr)
-    [ "$OS" = "RedHatEnterpriseServer" ] && OS="RedHat"
-  elif [ -f /etc/lsb-release ]; then
-    . /etc/lsb-release
-    OS=$DISTRIB_ID
-    VER=$DISTRIB_RELEASE
-    [ "$OS" = "RedHatEnterpriseServer" ] && OS="RedHat"
-  elif [ -f /etc/debian_version ]; then
-    OS=Debian
-    read -r VER < /etc/debian_version
-  elif [ -f /etc/centos-release ]; then
-    read -r LINE < /etc/centos-release
-    OS=CentOS
-    VER=$(echo "$LINE" | sed -E 's/.*release ([0-9.]+).*/\1/')
-  elif [ -f /etc/redhat-release ]; then
-    read -r LINE < /etc/redhat-release
-    OS=RedHat
-    VER=$(echo "$LINE" | sed -E 's/.*release ([0-9.]+).*/\1/')
-  elif [ -f /etc/alpine-release ]; then
-    OS=Alpine
-    read -r VER < /etc/alpine-release
-  else
-    OS=$(uname -s)
-    VER=$(uname -r)
-  fi
-  echo "Detected OS: $OS $VER"
-}
-
-
 # Setup sudo without password for current user
 setup_sudo_nopasswd() {
   echo "=== Setting up sudo without password for current user ==="
   SUDOERS_FILE="/etc/sudoers.d/$(whoami)"
-
-  case "$OS" in
-  Ubuntu | Debian | *"Linux Mint"* | CentOS | RedHat | Amazon*) ;;
-  Alpine*)
-    command -v sudo >/dev/null 2>&1 || {
-      echo "Installing sudo on Alpine..."
-      su -c "apk add sudo"
-    }
-    ;;
-  *)
-    echo "Unsupported OS for sudo configuration: $OS"
-    exit 1
-    ;;
-  esac
-
   echo "$(whoami) ALL=(ALL) NOPASSWD:ALL" | sudo tee "$SUDOERS_FILE" >/dev/null
   sudo chmod 0440 "$SUDOERS_FILE"
 }
@@ -74,34 +21,8 @@ setup_sudo_nopasswd() {
 # Install essential packages
 install_essentials() {
   echo "=== Installing essential packages ==="
-
-  case "$OS" in
-  Ubuntu | Debian | *"Linux Mint"*)
-    sudo apt update
-    sudo apt install -y curl openssh-server git build-essential
-    ;;
-  Alpine*)
-    sudo apk update
-    sudo apk add curl openssh git build-base linux-headers
-    ;;
-  Amazon* | CentOS | RedHat)
-    PKG_MGR=$(command -v dnf >/dev/null 2>&1 && echo dnf || echo yum)
-
-    if [[ "$OS" == Amazon* ]]; then
-      # Amazon Linux 2023: skip installing curl to avoid conflicts
-      echo "Amazon Linux detected: skipping curl install (curl-minimal already provided)"
-      PACKAGES="openssh-server git make gcc gcc-c++ kernel-devel util-linux-user"
-    else
-      PACKAGES="curl openssh-server git make gcc gcc-c++ kernel-devel util-linux-user"
-    fi
-
-    sudo $PKG_MGR install -y $PACKAGES
-    ;;
-  *)
-    echo "Unsupported OS for package installation: $OS"
-    exit 1
-    ;;
-  esac
+  sudo apt update
+  sudo apt install -y curl openssh-server git build-essential
 }
 
 configure_ssh() {
@@ -140,22 +61,7 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 EOF
 
   echo "=== Restarting SSH service ==="
-  SERVICE_NAME=""
-
-  for candidate in ssh sshd; do
-    if systemctl status "$candidate" &>/dev/null; then
-      SERVICE_NAME=$candidate
-      sudo systemctl restart "$SERVICE_NAME" && return
-    elif service "$candidate" status &>/dev/null; then
-      SERVICE_NAME=$candidate
-      sudo service "$SERVICE_NAME" restart && return
-    elif [ -x "/etc/init.d/$candidate" ]; then
-      SERVICE_NAME=$candidate
-      sudo "/etc/init.d/$SERVICE_NAME" restart && return
-    fi
-  done
-
-  echo "WARNING: Unable to restart SSH service automatically. Please restart manually."
+  sudo systemctl restart ssh || sudo service ssh restart
 }
 
 # Add private key
@@ -170,23 +76,7 @@ add_private_key() {
 # Update all packages
 update_packages() {
   echo "=== Updating all packages ==="
-
-  case "$OS" in
-  Ubuntu | Debian | *"Linux Mint"*)
-    sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
-    ;;
-  Alpine*)
-    sudo apk update && sudo apk upgrade
-    ;;
-  CentOS | RedHat | Amazon*)
-    PKG_MGR=$(command -v dnf >/dev/null 2>&1 && echo dnf || echo yum)
-    sudo $PKG_MGR upgrade -y
-    [ "$PKG_MGR" = "dnf" ] && sudo dnf autoremove -y || sudo yum clean all
-    ;;
-  *)
-    echo "Unsupported OS for package updates: $OS"
-    ;;
-  esac
+  sudo apt update && sudo apt upgrade -y && sudo apt autoremove -y
 }
 
 # Install newer Bash
@@ -197,15 +87,6 @@ install_bash() {
   curl -O http://ftp.gnu.org/gnu/bash/bash-5.2.tar.gz
   tar xzf bash-5.2.tar.gz
   cd bash-5.2
-
-  case "$OS" in
-  Alpine*)
-    sudo apk add ncurses-dev readline-dev
-    ;;
-  Ubuntu | Debian | *"Linux Mint"* | CentOS | RedHat | Amazon* | *)
-    # no extra dependencies for these
-    ;;
-  esac
 
   ./configure --prefix=/usr/local && make && sudo make install
 
@@ -233,32 +114,17 @@ setup_dotfiles() {
   (cd "$DOTFILES_DIR" && ./.unpack)
 }
 
-# Install Python 3.10
+# Install Python 3.12
 install_python() {
   PYTHON_VERSION="3.12.0"
   echo "=== Installing Python $PYTHON_VERSION via pyenv ==="
 
-  install_pyenv_dependencies() {
-    case "$OS" in
-    Ubuntu | Debian | *"Linux Mint"*)
-      sudo apt update
-      sudo apt install -y make build-essential libssl-dev zlib1g-dev \
-        libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
-        libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
-      ;;
-    Alpine*)
-      sudo apk add build-base libffi-dev openssl-dev zlib-dev bzip2-dev readline-dev sqlite-dev xz-dev tk-dev
-      ;;
-    CentOS | RedHat | Amazon*)
-      PKG_MGR=$(command -v dnf >/dev/null 2>&1 && echo dnf || echo yum)
-      sudo $PKG_MGR install -y gcc make zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel \
-        openssl-devel xz xz-devel libffi-devel wget
-      ;;
-    *)
-      echo "Unsupported OS for automatic dependency install. Please install pyenv build dependencies manually."
-      ;;
-    esac
-  }
+  # Install pyenv dependencies for Debian/Ubuntu
+  echo "=== Installing pyenv build dependencies ==="
+  sudo apt update
+  sudo apt install -y make build-essential libssl-dev zlib1g-dev \
+    libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+    libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
   if ! command -v pyenv >/dev/null; then
     echo "=== Installing pyenv ==="
@@ -270,8 +136,6 @@ install_python() {
   else
     echo "pyenv already installed: $(pyenv --version)"
   fi
-
-  install_pyenv_dependencies
 
   export PATH="$HOME/.pyenv/bin:$PATH"
   eval "$(pyenv init -)"
@@ -323,11 +187,10 @@ check_apps() {
 
 # Main execution
 main() {
-  detect_os
   setup_sudo_nopasswd
   install_essentials
   configure_ssh
-  # add_private_key
+  # add_private_key  # Commented out - uncomment if you want to add private key
   update_packages
   install_python
   install_bash
