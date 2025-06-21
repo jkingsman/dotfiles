@@ -61,6 +61,7 @@ fi
 
 # Set bell style to visible
 bind 'set bell-style visible' 2> /dev/null
+bind 'set prefer-visible-bell' 2> /dev/null
 
 # Force incremental search -- typing a command and using up and down arrows to browse commands that start with the same prefix
 bind '"\e[A": history-search-backward' 2> /dev/null
