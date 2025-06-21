@@ -157,8 +157,8 @@ generate_time() {
   utc_time="$(date -u +'%H:%M')"
 
   if [[ "${local_time:0:5}" == "$utc_time" ]]; then
-    # Times match (ignore seconds), show just one block, no L/Z, no seconds
-    time_str="${lightgray}[${utc_time}]${reset}"
+    # UTC and local match (ignore seconds), show just one block
+    time_str="${lightgray}[${local_time}Z]${reset}"
   else
     # Times differ, show both, no seconds for UTC
     time_str="${lightgray}[${local_time}L][${utc_time}Z]${reset}"
