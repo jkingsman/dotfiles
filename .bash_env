@@ -55,8 +55,8 @@ if [ -z "${NO_VI_MODE}" ]; then
   set -o vi
   bind 'set show-mode-in-prompt on' 2> /dev/null
   # Set vi mode indicators
-  bind 'set vi-ins-mode-string "∆ "' 2> /dev/null
-  bind 'set vi-cmd-mode-string "δ "' 2> /dev/null
+  bind 'set vi-ins-mode-string "╙─ ∆ "' 2> /dev/null
+  bind 'set vi-cmd-mode-string "╙─ δ "' 2> /dev/null
 fi
 
 # Set bell style to visible

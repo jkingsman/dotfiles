@@ -198,9 +198,9 @@ generate_prompt_body() {
     path="$(shorten_path "$path")"
   fi
 
-  local git_info="$(prompt_git "${white}${reset} on ${bold}${violet}" "${reset}${blue}")"
+  local git_info="$(prompt_git "${white}${reset}][${bold}${violet}" "${reset}${blue}")"
 
-  printf "${bold}${userStyle}%s${white}${reset} at ${bold}%s${hostStyle}%s${white}${reset} in ${bold}${green}%s%s${reset}" \
+  printf "${white}${reset}[${bold}${userStyle}%s${white}${reset}]${bold}%s${white}${reset}[${hostStyle}%s${white}${reset}][${bold}${green}%s%s${reset}${white}${reset}]" \
     "$user" "$is_atlas" "$host" "$path" "$git_info"
 }
 
@@ -222,7 +222,7 @@ get_right_prompt() {
 }
 
 PS1="\[\033]0;\W\007\]\n"   # terminal title
-PS1+="\[\$(generate_time)\] \[\$(generate_prompt_body)\]"
+PS1+="╔ \[\$(generate_prompt_body)\]\[\$(generate_time)\]"
 # PS1+="\[\$(get_right_prompt)\]" # just keep a boring left-aligned prompt for now
 PS1+="${reset}\n"
 
