@@ -170,10 +170,10 @@ pretty_command() {
     local result=""
     local indent="    "
     local in_base_cmd=true
-    
+
     # Split the command into words
     read -ra words <<< "$cmd"
-    
+
     for word in "${words[@]}"; do
         # Check if the word is a flag/switch (starts with - or --)
         if [[ "$word" =~ ^- ]]; then
@@ -195,7 +195,7 @@ pretty_command() {
             base_cmd="$base_cmd$word "
         fi
     done
-    
+
     # Add the last flag without continuation
     if ! $in_base_cmd; then
         printf "%s%s\n" "$indent" "$last_flag"
@@ -304,15 +304,15 @@ hgrep(){
     local colorCount=31
     # check if we have a ~/.bash_history_eternal file
     if [ -f ~/.bash_history_eternal ]; then
-        local grepper="cat ~/.bash_history_eternal | GREP_COLOR='1;$colorCount' grep --color=always '$1'";
+        local grepper="cat ~/.bash_history_eternal | GREP_COLOR='1;$colorCount' grep -a --color=always '$1'";
     else
-        local grepper="cat ~/.bash_history | GREP_COLOR='1;$colorCount' grep --color=always '$1'";
+        local grepper="cat ~/.bash_history | GREP_COLOR='1;$colorCount' grep -a --color=always '$1'";
     fi
 
     while shift; do
     colorCount=$((colorCount+1))
         [ -z "$1" ] && continue;
-        grepper="$grepper | GREP_COLOR='1;$colorCount' grep --color=always '$1'";
+        grepper="$grepper | GREP_COLOR='1;$colorCount' grep -a --color=always '$1'";
     done;
 
     eval "$grepper"
