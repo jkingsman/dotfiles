@@ -57,12 +57,80 @@ alias 777='chmod -R 777'
 # ------------------------------------------------------------------
 # archive aliases
 # ------------------------------------------------------------------
-alias mktar='tar -cvf'
-alias mkbz2='tar -cvjf'
-alias mktgz='tar -cvzf'
+mktar() {
+  if [ $# -eq 2 ]; then
+    tar -cvf "$1" "$2"
+  elif [ $# -eq 1 ]; then
+    dir="${1%/}"
+    tar -cvf "${dir##*/}.tar" "$dir"
+  else
+    echo "Usage: mktar [archive.tar] <dir> OR mktar <dir>"
+    return 1
+  fi
+}
+mkbz2() {
+  if [ $# -eq 2 ]; then
+    tar -cvjf "$1" "$2"
+  elif [ $# -eq 1 ]; then
+    dir="${1%/}"
+    tar -cvjf "${dir##*/}.tar.bz2" "$dir"
+  else
+    echo "Usage: mkbz2 [archive.tar.bz2] <dir> OR mkbz2 <dir>"
+    return 1
+  fi
+}
+mktgz() {
+  if [ $# -eq 2 ]; then
+    tar -cvzf "$1" "$2"
+  elif [ $# -eq 1 ]; then
+    dir="${1%/}"
+    tar -cvzf "${dir##*/}.tar.gz" "$dir"
+  else
+    echo "Usage: mktgz [archive.tar.gz] <dir> OR mktgz <dir>"
+    return 1
+  fi
+}
+
 alias untar='tar -xvf'
 alias unbz2='tar -xvjf'
 alias untgz='tar -xvzf'
+
+# from https://wiki.archlinux.org/title/Bash/Functions#Extract
+extract() {
+    local c e i
+
+    (($#)) || return
+
+    for i; do
+        c=''
+        e=1
+
+        if [[ ! -r $i ]]; then
+            echo "$0: file is unreadable: \`$i'" >&2
+            continue
+        fi
+
+        case $i in
+            *.t@(gz|lz|xz|b@(2|z?(2))|a@(z|r?(.@(Z|bz?(2)|gz|lzma|xz|zst)))))
+                   c=(tar xvf);;
+            *.7z)  c=(7z x);;
+            *.Z)   c=(uncompress);;
+            *.bz2) c=(bunzip2);;
+            *.exe) c=(cabextract);;
+            *.gz)  c=(gunzip);;
+            *.rar) c=(unrar x);;
+            *.xz)  c=(unxz);;
+            *.zip) c=(unzip);;
+            *.zst) c=(unzstd);;
+            *)     echo "$0: unrecognized file extension: \`$i'" >&2
+                   continue;;
+        esac
+
+        command "${c[@]}" "$i"
+        ((e = e || $?))
+    done
+    return "$e"
+}
 
 # ------------------------------------------------------------------
 # Terraform
