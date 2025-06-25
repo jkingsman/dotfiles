@@ -9,10 +9,10 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ~="cd ~"
-alias db="cd ~/Dropbox"
-alias dl="cd ~/Downloads"
-alias dt="cd ~/Desktop"
-alias godev="cd ~/Projects; cd '/mnt/d/Projects/Development'"
+db() { cd /mnt/d/Dropbox 2>/dev/null || cd ~/Dropbox; }
+dl() { cd /mnt/d/Downloads 2>/dev/null || cd ~/Downloads; }
+dt() { cd /mnt/d/Desktop 2>/dev/null || cd ~/Desktop; }
+godev() { cd /mnt/d/Projects/Development 2>/dev/null || cd ~/Projects; }
 alias e.="open ."
 
 # ------------------------------------------------------------------

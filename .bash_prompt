@@ -170,6 +170,9 @@ generate_time() {
 PATH_MAPPINGS=(
   "/mnt/d/Projects/Development|<winDev>"
   "/Users/jkingsman/Projects|<atlDev>"
+  "~/Projects/chartio-castle|<castle>"
+  "~/Projects/dullboy|<dullboy>"
+  "~/Projects|<atlDev>"
   "/mnt/d|<D:>"
 )
 
@@ -194,9 +197,8 @@ generate_prompt_body() {
   local path="${PWD}"
   if [[ "$path" == "$HOME" || "$path" == "$HOME/"* ]]; then
     path="~${path#$HOME}"
-  else
-    path="$(shorten_path "$path")"
   fi
+  path="$(shorten_path "$path")"
 
   local git_info="$(prompt_git "${white}${reset} on ${bold}${violet}" " ${reset}${blue}")"
 

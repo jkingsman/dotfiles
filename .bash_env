@@ -211,6 +211,9 @@ fi
 [[ -d "$HOME/.yarn/bin" ]] && export PATH="$HOME/.yarn/bin:$PATH"
 [[ -d "$HOME/.config/yarn/global/node_modules/.bin" ]] && export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
+# path management
+export CDPATH=":.:/mnt/d/Projects/Development/:/mnt/d/:~:$CDPATH"
+
 # ------------------------------------------------------------------
 # Bash backups
 # ------------------------------------------------------------------
