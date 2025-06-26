@@ -1,27 +1,33 @@
-colors:
-  # Default colors
-  primary:
-    background: '0x282c34'
-    foreground: '0xe6edfd'
+# Colors (AtomOneDarkCustomized)
 
-  # Normal colors
-  normal:
-    black:   '0x15191e'
-    red:     '0xbe5046'
-    green:   '0x98c379'
-    yellow:  '0xd19a66'
-    blue:    '0x61afef'
-    magenta: '0xc678dd'
-    cyan:    '0x56b6c2'
-    white:   '0xa9b5d8'
+[colors.bright]
+black = '#4c4c4c'
+blue = '#6ebbff'
+cyan = '#6fd4e2'
+green = '#a1cd81'
+magenta = '#de85f5'
+red = '#fa6774'
+white = '#ffffff'
+yellow = '#edbe73'
 
-  # Bright colors
-  bright:
-    black:   '0x4c4c4c'
-    red:     '0xe06c75'
-    green:   '0xa9cc87'
-    yellow:  '0xe5c07b'
-    blue:    '0x7cb9f9'
-    magenta: '0xce88ed'
-    cyan:    '0x81d1df'
-    white:   '0xffffff'
+[colors.cursor]
+cursor = '#ffffff'
+text = '#000000'
+
+[colors.normal]
+black = '#14191e'
+blue = '#4fb2f7'
+cyan = '#40bac5'
+green = '#8ec573'
+magenta = '#d875e5'
+red = '#d74b43'
+white = '#a7b6dc'
+yellow = '#dd9860'
+
+[colors.primary]
+background = '#272c35'
+foreground = '#e4eeff'
+
+[colors.selection]
+background = '#9ba5be'
+text = '#000000'

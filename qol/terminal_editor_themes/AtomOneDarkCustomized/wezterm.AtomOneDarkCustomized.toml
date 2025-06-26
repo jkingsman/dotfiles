@@ -1,0 +1,12 @@
+# AtomOneDarkCustomized
+[colors]
+foreground = "#e4eeff"
+background = "#272c35"
+cursor_bg = "#ffffff"
+cursor_border = "#ffffff"
+cursor_fg = "#000000"
+selection_bg = "#9ba5be"
+selection_fg = "#000000"
+
+ansi = ["#14191e","#d74b43","#8ec573","#dd9860","#4fb2f7","#d875e5","#40bac5","#a7b6dc"]
+brights = ["#4c4c4c","#fa6774","#a1cd81","#edbe73","#6ebbff","#de85f5","#6fd4e2","#ffffff"]

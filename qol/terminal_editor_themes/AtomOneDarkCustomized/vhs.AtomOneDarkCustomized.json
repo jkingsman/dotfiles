@@ -18,6 +18,6 @@
   "brightWhite": "#ffffff",
   "background": "#272c35",
   "foreground": "#e4eeff",
-  "cursorColor": "#ffffff",
-  "selectionBackground": "#9ba5be"
+  "cursor": "#ffffff",
+  "selection": "#9ba5be"
 }
