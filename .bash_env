@@ -168,12 +168,14 @@ alias lsl="ls ${colorflag} -lath"
 # ------------------------------------------------------------------
 # NVM, RVM, pyenv, and utility enablement
 # ------------------------------------------------------------------
-# vimplug
 
-if [[ -d "$HOME/.vim/autoload" && ! -f "$HOME/.vim/autoload/plug.vim" ]]; then
-    curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    vim +PlugInstall +qall
+# vimplug but offline-safe
+if [[ ! -d "$HOME/.vim/autoload" || ! -f "$HOME/.vim/autoload/plug.vim" ]]; then
+    # Check for network connectivity before attempting download
+    if ping -c 1 github.com >/dev/null 2>&1 || ping -n 1 github.com >/dev/null 2>&1; then
+        curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        vim +PlugInstall +qall
+    fi
 fi
 
 # Homebrew setup - check if brew exists first
