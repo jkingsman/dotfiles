@@ -2,8 +2,16 @@ if ! empty(globpath(&rtp, 'autoload/plug.vim'))
   call plug#begin()
   Plug 'joshdick/onedark.vim'
   Plug 'tpope/vim-sensible'
+  Plug 'preservim/nerdtree' |
+            \ Plug 'Xuyuanp/nerdtree-git-plugin'
   call plug#end()
+
   colorscheme onedark
+
+  " Open nerdtree on launch, and close if it's the only pane
+  autocmd VimEnter * NERDTree | wincmd p
+  autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+  let g:NERDTreeMouseMode=2
 endif
 
 filetype plugin on " Auto-detect un-labeled filetypes
@@ -36,10 +44,9 @@ au BufReadPost * if line("'\"") > 0 && line("'\"") <= line("$") | exe "normal g'
 filetype plugin indent on
 syntax enable
 
-nnoremap <C-Right> :bnext<cr>
-nnoremap <C-Left> :bprevious<cr>
-nnoremap <C-b> :buffers<cr>:buffer
-nnoremap <C-q> :copen<cr>
+nnoremap <C-Right> <C-w>w
+nnoremap <C-Left> <C-w>W
+nnoremap <C-Up> :buffers<cr>:buffer
 
 " Personal tabs/spaces settings.
 autocmd Filetype make,go,sh setlocal noexpandtab tabstop=4 shiftwidth=4
