@@ -168,6 +168,16 @@ alias lsl="ls ${colorflag} -lath"
 # ------------------------------------------------------------------
 # NVM, RVM, pyenv, and utility enablement
 # ------------------------------------------------------------------
+
+# Defensive, silent vim-plug install
+if [[ -d "$HOME/.vim/autoload" && ! -f "$HOME/.vim/autoload/plug.vim" ]]; then
+    command -v curl >/dev/null 2>&1 || return
+    command -v vim >/dev/null 2>&1 || return
+    curl -fsSL --create-dirs -o "$HOME/.vim/autoload/plug.vim" \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim >/dev/null 2>&1 || return
+    vim +PlugInstall +qall >/dev/null 2>&1 || return
+fi
+
 # Homebrew setup - check if brew exists first
 if command -v /opt/homebrew/bin/brew >/dev/null 2>&1; then
     eval "$(/opt/homebrew/bin/brew shellenv)" 2>/dev/null || true
