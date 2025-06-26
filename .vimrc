@@ -95,6 +95,11 @@ nnoremap <C-Right> <C-w>w
 nnoremap <C-Left> <C-w>W
 nnoremap <C-Up> :buffers<cr>:buffer<space>
 
+" pane swap but mac
+noremap <C-h> <C-w>w
+nnoremap <C-l> <C-w>W
+nnoremap <C-k> :buffers<cr>:buffer<space>
+
 " FZF file search (only if plugin loaded)
 if !empty(globpath(&rtp, 'plugged/fzf.vim'))
   nnoremap <C-p> :Files<CR>
