@@ -1,0 +1,23 @@
+{
+  "name": "AtomOneDarkCustomized",
+  "black": "#15191e",
+  "red": "#be5046",
+  "green": "#98c379",
+  "yellow": "#d19a66",
+  "blue": "#61afef",
+  "purple": "#c678dd",
+  "cyan": "#56b6c2",
+  "white": "#a9b5d8",
+  "brightBlack": "#4c4c4c",
+  "brightRed": "#e06c75",
+  "brightGreen": "#a9cc87",
+  "brightYellow": "#e5c07b",
+  "brightBlue": "#7cb9f9",
+  "brightPurple": "#ce88ed",
+  "brightCyan": "#81d1df",
+  "brightWhite": "#ffffff",
+  "background": "#282c34",
+  "foreground": "#e6edfd",
+  "cursorColor": "#fefefe",
+  "selectionBackground": "#9ca4bb"
+}
