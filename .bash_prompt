@@ -103,7 +103,7 @@ if tput setaf 1 &> /dev/null; then
     white=$(tput setaf 15);
     yellow=$(tput setaf 136);
     gray=$(tput setaf 255);
-    lightgray=$(tput setaf 240);
+    lightgray=$(tput setaf 246);
 else
     bold='';
     italic="\e[3m";
