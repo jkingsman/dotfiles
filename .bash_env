@@ -116,6 +116,9 @@ shopt -s globstar 2> /dev/null
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob; 2> /dev/null
 
+# Use extglob for extended pattern matching
+bind 'set extglob on' 2> /dev/null
+
 # Perform file completion in a case insensitive fashion
 bind "set completion-ignore-case on" 2> /dev/null
 

@@ -95,41 +95,28 @@ alias untar='tar -xvf'
 alias unbz2='tar -xvjf'
 alias untgz='tar -xvzf'
 
-# from https://wiki.archlinux.org/title/Bash/Functions#Extract
-extract() {
-    local c e i
-
-    (($#)) || return
-
-    for i; do
-        c=''
-        e=1
-
-        if [[ ! -r $i ]]; then
-            echo "$0: file is unreadable: \`$i'" >&2
-            continue
-        fi
-
-        case $i in
-            *.t@(gz|lz|xz|b@(2|z?(2))|a@(z|r?(.@(Z|bz?(2)|gz|lzma|xz|zst)))))
-                   c=(tar xvf);;
-            *.7z)  c=(7z x);;
-            *.Z)   c=(uncompress);;
-            *.bz2) c=(bunzip2);;
-            *.exe) c=(cabextract);;
-            *.gz)  c=(gunzip);;
-            *.rar) c=(unrar x);;
-            *.xz)  c=(unxz);;
-            *.zip) c=(unzip);;
-            *.zst) c=(unzstd);;
-            *)     echo "$0: unrecognized file extension: \`$i'" >&2
-                   continue;;
+# from https://stackoverflow.com/a/48250807
+extract () {
+    if [ -f "$1" ] ; then
+        case $1 in
+            *.tar.bz2)   tar xvjf "$1" ;;
+            *.tar.gz)    tar xvzf "$1" ;;
+            *.tar.xz)    tar xvJf "$1" ;;
+            *.bz2)       bunzip2 "$1" ;;
+            *.rar)       unrar x "$1" ;;
+            *.gz)        gunzip "$1" ;;
+            *.tar)       tar xvf "$1" ;;
+            *.tbz2)      tar xvjf "$1" ;;
+            *.tgz)       tar xvzf "$1" ;;
+            *.zip)       unzip "$1" ;;
+            *.jar)       unzip "$1" ;;
+            *.Z)         uncompress "$1" ;;
+            *.7z)        7z x "$1" ;;
+            *)           echo "'$1' cannot be extracted via >extract<" ;;
         esac
-
-        command "${c[@]}" "$i"
-        ((e = e || $?))
-    done
-    return "$e"
+    else
+        echo "'$1' is not a valid file"
+    fi
 }
 
 # ------------------------------------------------------------------
