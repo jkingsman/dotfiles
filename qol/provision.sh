@@ -151,6 +151,15 @@ install_python() {
   echo "Python $(python --version) installed and set as default via pyenv."
 }
 
+# Install command-line productivity tools
+install_cli_tools() {
+  echo "=== Installing command-line productivity tools ==="
+
+  # Install fzf, ripgrep, and fd-find via apt
+  sudo apt update
+  sudo apt install -y fzf ripgrep fd-find
+}
+
 # Install quality-of-life packages
 install_qol_packages() {
   echo "=== Installing quality-of-life packages ==="
@@ -236,9 +245,25 @@ check_apps() {
   check_version python3
   check_version java
   check_version node
+  check_version fzf
+  # ripgrep uses 'rg' as its command
+  if command -v rg &>/dev/null; then
+    ver=$(rg --version | head -n1)
+    echo "✅ ripgrep: $ver"
+  else
+    echo "❌ ripgrep: not found"
+  fi
+  check_version fd
+  # fd-find installs as 'fdfind' on Debian/Ubuntu
+  if command -v fdfind &>/dev/null; then
+    ver=$(fdfind --version)
+    echo "✅ fd-find: $ver"
+  else
+    echo "❌ fd-find: not found"
+  fi
 
   echo -e "\n=== Presence Checks ==="
-  for cmd in pyenv pip poetry uv curl ip ifconfig ipconfig vim emacs jq perl npm nvm ruby rvm mvn gradle nginx caddy docker; do
+  for cmd in pyenv pip poetry uv curl ip ifconfig ipconfig vim emacs jq perl npm nvm ruby rvm mvn gradle nginx caddy docker fzf rg fdfind; do
     check_presence "$cmd"
   done
 }
@@ -253,6 +278,7 @@ main() {
   install_python
   install_bash
   setup_dotfiles
+  install_cli_tools
   install_qol_packages
   check_apps
 
