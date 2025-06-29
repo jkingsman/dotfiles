@@ -208,6 +208,13 @@ if [[ -d "$HOME/.pyenv" ]]; then
     fi
 fi
 
+# for interactive shells, if python is not available, alias python to python3
+if [[ $- == *i* ]]; then
+    if ! type python >/dev/null 2>&1 && type python3 >/dev/null 2>&1; then
+        alias python='python3'
+    fi
+fi
+
 # RVM setup - check if RVM script exists
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" 2>/dev/null || true
 
