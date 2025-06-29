@@ -116,6 +116,10 @@ shopt -s globstar 2> /dev/null
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob; 2> /dev/null
 
+# multiline command history
+shopt -s cmdhist
+shopt -s lithist
+
 # Use extglob for extended pattern matching
 bind 'set extglob on' 2> /dev/null
 
