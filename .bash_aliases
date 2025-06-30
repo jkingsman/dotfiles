@@ -259,6 +259,37 @@ pretty_command() {
     fi
 }
 
+# displays commands shadowed by others on the $PATH
+function show_shadows() {
+  declare -A cmd_paths
+  local count=0
+
+  IFS=':' read -ra dirs <<< "$PATH"
+  for dir in "${dirs[@]}"; do
+      [[ -d "$dir" ]] || continue
+      for file in "$dir"/*; do
+          [[ -x "$file" && -f "$file" ]] || continue
+          cmd=$(basename "$file")
+          cmd_paths["$cmd"]+="$file "
+          ((count++))
+          if (( count % 100 == 0 )); then
+              echo "Checked $count commands so far..."
+          fi
+      done
+  done
+
+  echo "Commands found in multiple PATH directories:"
+  for cmd in "${!cmd_paths[@]}"; do
+      paths=(${cmd_paths[$cmd]})
+      if (( ${#paths[@]} > 1 )); then
+          echo "$cmd:"
+          for p in "${paths[@]}"; do
+              echo "  $p"
+          done
+      fi
+  done
+}
+
 # run a command n times (ntimes 50 curl example.com) or do it asynchronously (ntimes a 50 curl example.com)
 function ntimes() {
   local async=0
