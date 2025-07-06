@@ -235,6 +235,14 @@ fi
 [[ -d "$HOME/.yarn/bin" ]] && export PATH="$HOME/.yarn/bin:$PATH"
 [[ -d "$HOME/.config/yarn/global/node_modules/.bin" ]] && export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
+# FZF ctrl+r
+[ -f ~/.fzf/shell/key-bindings.bash ] && source ~/.fzf/shell/key-bindings.bash
+# if key-bindings.bash is not found, add $HOME/.fzf/bin to the PATH
+if [[ -d "$HOME/.fzf/bin" ]]; then
+    export PATH="$HOME/.fzf/bin:$PATH"
+fi
+
+
 # path management
 export CDPATH=":.:/mnt/d/Projects/Development/:/mnt/d/:~:$CDPATH"
 

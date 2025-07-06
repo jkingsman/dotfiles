@@ -155,9 +155,13 @@ install_python() {
 install_cli_tools() {
   echo "=== Installing command-line productivity tools ==="
 
+  git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+  ~/.fzf/install --key-bindings --no-completion --no-update-rc --no-zsh --no-fish
+  export PATH="$HOME/.fzf/bin:$PATH"
+
   # Install fzf, ripgrep, and fd-find via apt
   sudo apt update
-  sudo apt install -y fzf ripgrep fd-find
+  sudo apt install -y ripgrep fd-find
 }
 
 # Install quality-of-life packages
