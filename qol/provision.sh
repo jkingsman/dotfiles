@@ -159,7 +159,7 @@ install_cli_tools() {
   ~/.fzf/install --key-bindings --no-completion --no-update-rc --no-zsh --no-fish
   export PATH="$HOME/.fzf/bin:$PATH"
 
-  # Install fzf, ripgrep, and fd-find via apt
+  # Install ripgrep, and fd-find via apt
   sudo apt update
   sudo apt install -y ripgrep fd-find
 }
@@ -198,21 +198,34 @@ install_qol_packages() {
   # Install Java (OpenJDK 21)
   echo "=== Installing Java (OpenJDK 21) ==="
   sudo apt update
-  sudo apt install -y openjdk-21-jdk
+  if apt-cache show openjdk-21-jdk &>/dev/null; then
+    sudo apt install -y openjdk-21-jdk
+  else
+    echo "WARNING: openjdk-21-jdk not found in apt repositories. Skipping Java installation."
+  fi
 
-  # Install Docker
+  # Install Docker (Debian/Ubuntu detection)
   echo "=== Installing Docker ==="
-  sudo apt-get update
   sudo apt-get install -y ca-certificates curl
   sudo install -m 0755 -d /etc/apt/keyrings
-  sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+
+  # Detect OS and set Docker repo variables
+  . /etc/os-release
+  if [[ "$ID" == "ubuntu" ]]; then
+    DOCKER_GPG_URL="https://download.docker.com/linux/ubuntu/gpg"
+    DOCKER_REPO="deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu ${UBUNTU_CODENAME:-$VERSION_CODENAME} stable"
+  elif [[ "$ID" == "debian" ]]; then
+    DOCKER_GPG_URL="https://download.docker.com/linux/debian/gpg"
+    DOCKER_REPO="deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian $VERSION_CODENAME stable"
+  else
+    echo "Unsupported OS for Docker install: $ID"
+    exit 1
+  fi
+
+  sudo curl -fsSL "$DOCKER_GPG_URL" -o /etc/apt/keyrings/docker.asc
   sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-  # Add the repository to Apt sources:
-  echo \
-    "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-    $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
-    sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+  echo "$DOCKER_REPO" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
   sudo apt-get update
   sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
