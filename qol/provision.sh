@@ -161,7 +161,7 @@ install_cli_tools() {
 
   # Install ripgrep, and fd-find via apt
   sudo apt update
-  sudo apt install -y ripgrep fd-find
+  sudo apt install -y ripgrep fd-find screen
 }
 
 # Install quality-of-life packages
