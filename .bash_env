@@ -235,6 +235,18 @@ fi
 [[ -d "$HOME/.yarn/bin" ]] && export PATH="$HOME/.yarn/bin:$PATH"
 [[ -d "$HOME/.config/yarn/global/node_modules/.bin" ]] && export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
+# FZF ctrl+r
+[ -f ~/.fzf/shell/key-bindings.bash ] &&
+# if key-bindings.bash is not found, add $HOME/.fzf/bin to the PATH
+if [[ -d "$HOME/.fzf/bin" ]]; then
+    export PATH="$HOME/.fzf/bin:$PATH"
+    source ~/.fzf/shell/key-bindings.bash
+
+    # "?" toggles preview to show multiline/wrapped comands
+    export FZF_CTRL_R_OPTS="${FZF_CTRL_R_OPTS:+$FZF_CTRL_R_OPTS }--preview 'echo {}' --preview-window down:5:hidden:wrap --bind '?:toggle-preview'"
+fi
+
+
 # path management
 export CDPATH=":.:/mnt/d/Projects/Development/:/mnt/d/:~:$CDPATH"
 
