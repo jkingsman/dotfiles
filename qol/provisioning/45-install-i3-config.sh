@@ -17,6 +17,7 @@ run_sudo apt install -y \
   i3lock \
   dmenu \
   dunst \
+  xdotool \
   feh
 
 # Create i3 config directory
