@@ -37,3 +37,7 @@ git config --global alias.recent '!git for-each-ref --sort=-committerdate refs/h
 git config --global alias.finmerge '!git add . && git commit --no-edit && git push'
 git config --global alias.finrebase '!git add . && GIT_EDITOR=true git rebase --continue && git push --force'
 git config --global alias.showdroppedstash '!git fsck --unreachable | grep commit | cut -d" " -f3 | xargs git log --merges --no-walk --grep=WIP'
+
+echo "Configuring git globals..."
+git config --global --type bool push.autoSetupRemote true
+git config --global pull.rebase true
