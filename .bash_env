@@ -175,6 +175,27 @@ install_bash_52() {
   fi
 }
 
+install_kitty_theme() {
+  KITTY_THEME_SRC="${DIR}qol/terminal_editor_themes/AtomOneDarkCustomized/kitty.AtomOneDarkCustomized.conf"
+  KITTY_CONFIG_DIR="$HOME/.config/kitty"
+  KITTY_THEME_DIR="$KITTY_CONFIG_DIR/themes"
+  KITTY_THEME_DEST="$KITTY_THEME_DIR/AtomOneDarkCustomized.conf"
+  if [ -f "$KITTY_THEME_SRC" ]; then
+    if [ -d "$KITTY_CONFIG_DIR" ]; then
+      mkdir -p "$KITTY_THEME_DIR"
+      cp "$KITTY_THEME_SRC" "$KITTY_THEME_DEST"
+      # Set the theme in kitty.conf if not already set
+      KITTY_CONF="$KITTY_CONFIG_DIR/kitty.conf"
+      if [ ! -f "$KITTY_CONF" ]; then
+        echo "include themes/AtomOneDarkCustomized.conf" > "$KITTY_CONF"
+      elif ! grep -q "include themes/AtomOneDarkCustomized.conf" "$KITTY_CONF"; then
+        echo "include themes/AtomOneDarkCustomized.conf" >> "$KITTY_CONF"
+      fi
+      echo "Kitty theme AtomOneDarkCustomized installed and set."
+    fi
+  fi
+}
+
 # autocomplete
 complete -C '/usr/local/bin/aws_completer' aws || true
 
