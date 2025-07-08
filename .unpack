@@ -23,3 +23,17 @@ if ! grep ".bashrc_personal" ~/.bashrc > /dev/null 2>&1; then
 else
    echo "Found invocation in .bashrc; skipping..."
 fi
+
+echo "Loading git aliases..."
+git config --global alias.co "checkout"
+git config --global alias.chp "cherry-pick"
+git config --global alias.git '!exec git'
+git config --global alias.unfuck '!git reset --hard @{u} && git clean -f -d'
+git config --global alias.superunfuck '!git cherry-pick --abort; git rebase --abort; git reset --hard @{u} && git clean -f -d'
+git config --global alias.serve "daemon --verbose --export-all --base-path=.git --reuseaddr --strict-paths .git/"
+git config --global alias.mergemaster '!git fetch origin master:master && git merge master'
+git config --global alias.mergemain '!git fetch origin main:main && git merge main'
+git config --global alias.recent '!git for-each-ref --sort=-committerdate refs/heads/ --count=10 --format='"'"'%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'"'"''
+git config --global alias.finmerge '!git add . && git commit --no-edit && git push'
+git config --global alias.finrebase '!git add . && GIT_EDITOR=true git rebase --continue && git push --force'
+git config --global alias.showdroppedstash '!git fsck --unreachable | grep commit | cut -d" " -f3 | xargs git log --merges --no-walk --grep=WIP'

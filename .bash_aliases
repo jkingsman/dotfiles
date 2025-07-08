@@ -48,6 +48,7 @@ alias gchpc="git add . && git cherry-pick --continue"
 # chmod
 # ------------------------------------------------------------------
 alias mx='chmod a+x'
+alias chmodx='chmod a+x'
 alias 000='chmod -R 000'
 alias 644='chmod -R 644'
 alias 666='chmod -R 666'
