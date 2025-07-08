@@ -15,9 +15,9 @@ run_sudo apt install -y \
   i3-wm \
   i3status \
   i3lock \
-  dmenu \
   dunst \
   xdotool \
+  rofi \
   feh
 
 # Create i3 config directory
