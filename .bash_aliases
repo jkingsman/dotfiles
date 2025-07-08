@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-DIR="$(dirname "${BASH_SOURCE[0]}")/"
-
 # ------------------------------------------------------------------
 # Directory navigation
 # ------------------------------------------------------------------
@@ -48,6 +46,7 @@ alias gchpc="git add . && git cherry-pick --continue"
 # chmod
 # ------------------------------------------------------------------
 alias mx='chmod a+x'
+alias chmodx='chmod a+x'
 alias 000='chmod -R 000'
 alias 644='chmod -R 644'
 alias 666='chmod -R 666'
@@ -345,6 +344,10 @@ drun (){
         docker run -itu root $1 bash
     fi
 }
+
+alias dockerkill='docker kill $(docker ps -q)'
+alias dockerstop='docker kill $(docker ps -q)'
+alias dockerclean='docker kill $(docker ps -q); docker system prune -f; docker image prune -af; docker buildx prune -f; docker volume prune -f; docker network prune -f'
 
 # turn a markdown file into an epub
 ebookify(){

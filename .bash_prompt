@@ -190,9 +190,9 @@ shorten_path() {
 }
 
 generate_prompt_body() {
-  local user="${USER}"
+  local user="${USER:-$(whoami)}"
   local is_atlas="$(get_is_atlas_on_vdi)"
-  local host="${HOSTNAME}"
+  local host="${HOSTNAME:-$(hostname)}"
   # set path to pwd, or if it's the home directory, use ~
   local path="${PWD}"
   if [[ "$path" == "$HOME" || "$path" == "$HOME/"* ]]; then
@@ -202,8 +202,7 @@ generate_prompt_body() {
 
   local git_info="$(prompt_git "${white}${reset} on ${bold}${violet}" " ${reset}${blue}")"
 
-  printf "${bold}${userStyle}%s${white}${reset} at ${bold}%s${hostStyle}%s${white}${reset} in ${bold}${green}%s%s${reset}" \
-    "$user" "$is_atlas" "$host" "$path" "$git_info"
+  echo -e "${bold}${userStyle}${user}${white}${reset} at ${bold}${is_atlas}${hostStyle}${host}${white}${reset} in ${bold}${green}${path}${git_info}${reset}"
 }
 
 get_right_prompt() {

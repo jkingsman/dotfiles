@@ -123,5 +123,5 @@ augroup END
 " ===================================================================
 " CUSTOM COMMANDS
 " ===================================================================
-" Save file with sudo
+" Save file with sudo when :W is run
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!

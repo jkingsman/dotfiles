@@ -12,11 +12,8 @@ It's a pretty vanilla setup, and will run gracefully on just about any Bash vers
         * Supplemented by `.inputrc` for direct Readline goodness
     * `.bash_prompt` for my customized prompts -- TL;DR command timing information, path/git status/etc. and error code output
     * `.bashrc_personal` is just a skeleton file that includes my other tools
-* `.git_alias` has my custom `git` commands in it and needs to be injected into the system `.gitconfig`
 * `.pack` and `.unpack`, scripts to move files out of the repo and into the local env and vice versa. `transporter.sh` bundles things for one way entry into ephemeral environments and assumes a `~/data` dir for it to make a home in.
 * `.vimrc` even though I spend most of my day in VSCode, I still like to have vim work for quick edits
-* `bliss.sh` to unpack a low res copy of bliss.jpg and set it as mate wallpaper
-* `minimalwakelock.html` is a file for keeping the screen awak.
 
 `qol` contains some quality of life files -- fonts, images, some helper scripts I use every now and again.
 
