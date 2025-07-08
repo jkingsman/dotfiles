@@ -90,12 +90,29 @@ install_bash() {
 
   ./configure --prefix=/usr/local && make && sudo make install
 
-  echo "=== Adding new Bash to allowed shells ==="
-  grep -qx "/usr/local/bin/bash" /etc/shells || echo "/usr/local/bin/bash" | sudo tee -a /etc/shells
+  if [ -f /etc/shells ]; then
+    SHELLS_FILE="/etc/shells"
+  elif [ -f /private/etc/shells ]; then
+    SHELLS_FILE="/private/etc/shells"
+  else
+    echo "Warning: Could not find shells file. You may need to add /usr/local/bin/bash manually."
+    SHELLS_FILE=""
+  fi
 
-  echo "=== Changing default shell to new Bash ==="
-  USERNAME=$(whoami)
-  sudo chsh -s /usr/local/bin/bash "$USERNAME"
+  if [ -n "$SHELLS_FILE" ]; then
+    if ! grep -q "^/usr/local/bin/bash$" "$SHELLS_FILE"; then
+      sudo bash -c "echo /usr/local/bin/bash >> $SHELLS_FILE"
+    else
+      echo "/usr/local/bin/bash already in $SHELLS_FILE"
+    fi
+  fi
+
+  if command -v chsh >/dev/null 2>&1; then
+    sudo chsh -s /usr/local/bin/bash "$USER"
+  else
+    echo "chsh not found. You may need to change your shell manually."
+    echo "Try: usermod -s /usr/local/bin/bash $USER"
+  fi
 }
 
 # Clone dotfiles and run unpack
