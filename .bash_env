@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-DIR="$(dirname "${BASH_SOURCE[0]}")/"
-
 # ------------------------------------------------------------------
 # Bash customization
 # ------------------------------------------------------------------
+
+# add ~/.local and kitty to path
+export PATH="$HOME/.local/bin:$HOME/.local/kitty.app/bin:$PATH"
 
 export VISUAL=vim
 if ! command -v vim &> /dev/null
@@ -176,24 +177,12 @@ install_bash_52() {
 }
 
 install_kitty_theme() {
-  KITTY_THEME_SRC="${DIR}qol/terminal_editor_themes/AtomOneDarkCustomized/kitty.AtomOneDarkCustomized.conf"
-  KITTY_CONFIG_DIR="$HOME/.config/kitty"
-  KITTY_THEME_DIR="$KITTY_CONFIG_DIR/themes"
-  KITTY_THEME_DEST="$KITTY_THEME_DIR/AtomOneDarkCustomized.conf"
-  if [ -f "$KITTY_THEME_SRC" ]; then
-    if [ -d "$KITTY_CONFIG_DIR" ]; then
-      mkdir -p "$KITTY_THEME_DIR"
-      cp "$KITTY_THEME_SRC" "$KITTY_THEME_DEST"
-      # Set the theme in kitty.conf if not already set
-      KITTY_CONF="$KITTY_CONFIG_DIR/kitty.conf"
-      if [ ! -f "$KITTY_CONF" ]; then
-        echo "include themes/AtomOneDarkCustomized.conf" > "$KITTY_CONF"
-      elif ! grep -q "include themes/AtomOneDarkCustomized.conf" "$KITTY_CONF"; then
-        echo "include themes/AtomOneDarkCustomized.conf" >> "$KITTY_CONF"
-      fi
-      echo "Kitty theme AtomOneDarkCustomized installed and set."
-    fi
+  KITTY_THEME_SRC="$HOME/dotfiles/qol/terminal_editor_themes/AtomOneDarkCustomized/kitty.AtomOneDarkCustomized.conf"
+  if [ -f "$KITTY_THEME_SRC" ] && [ -d "$HOME/.config/kitty" ]; then
+    mkdir -p "$HOME/.config/kitty/themes"
+    cp "$KITTY_THEME_SRC" "$HOME/.config/kitty/themes/AtomOneDarkCustomized.conf"
   fi
+  # kitten themes --reload-in=all
 }
 
 # autocomplete
