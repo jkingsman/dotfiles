@@ -8,7 +8,7 @@
 export PATH="$HOME/.local/bin:$HOME/.local/kitty.app/bin:$PATH"
 
 # swap caps and escape where supported
-command -v setxkbmap >/dev/null 2>&1 && setxkbmap -option caps:swapescape
+command -v setxkbmap >/dev/null 2>&1 && setxkbmap -option caps:escape
 
 export VISUAL=vim
 if ! command -v vim &> /dev/null
