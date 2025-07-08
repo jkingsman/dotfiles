@@ -41,3 +41,4 @@ git config --global alias.showdroppedstash '!git fsck --unreachable | grep commi
 echo "Configuring git globals..."
 git config --global --type bool push.autoSetupRemote true
 git config --global pull.rebase true
+git config --global core.autocrlf input
