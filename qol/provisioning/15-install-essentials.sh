@@ -34,4 +34,5 @@ run_sudo apt install -y \
   ca-certificates \
   gnupg \
   apt-transport-https \
-  sudo
+  sudo \
+  fontconfig

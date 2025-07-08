@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Check installed applications
 
-set -ex
+set +ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/utils.sh"
@@ -50,6 +50,6 @@ else
 fi
 
 echo -e "\n=== Presence Checks ==="
-for cmd in pyenv pip poetry uv curl ip ifconfig ipconfig vim emacs jq perl npm nvm ruby rvm mvn gradle nginx caddy docker fzf rg fdfind; do
+for cmd in pyenv pip poetry uv curl ip ifconfig ipconfig vim emacs jq perl npm nvm ruby rvm mvn gradle nginx caddy docker fzf rg fdfind kitty; do
   check_presence "$cmd"
 done
