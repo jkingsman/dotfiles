@@ -20,7 +20,7 @@ It's a pretty vanilla setup, and will run gracefully on just about any Bash vers
 Quick provision:
 
 ```
-curl -s https://raw.githubusercontent.com/jkingsman/dotfiles/refs/heads/main/qol/provision.sh | bash
+git clone https://github.com/jkingsman/dotfiles.git; cd dotfiles/provisioning; bash ./provision.sh
 ```
 
 Quick clone:
