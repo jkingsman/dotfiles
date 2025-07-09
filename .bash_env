@@ -52,6 +52,7 @@ fi
 
 # some temporary testing
 export NO_VI_MODE="true"
+bind 'set -o emacs' 2> /dev/null
 
 # Source the system inputrc if it exists
 if [ -f /etc/inputrc ]; then

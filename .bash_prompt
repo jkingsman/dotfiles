@@ -228,7 +228,7 @@ PS1+="\[\$(generate_time)\] \[\$(generate_prompt_body)\]"
 PS1+="${reset}\n"
 
 if [ -n "${NO_VI_MODE}" ]; then
-  PS1+="▲ "
+  PS1+="Δ "
 fi
 
 export PS1;
