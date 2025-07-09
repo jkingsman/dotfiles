@@ -30,3 +30,8 @@ bold_font        Hasklig Medium
 italic_font      Hasklig Light Italic
 bold_italic_font Hasklig Medium Italic
 EOF"
+
+run_as_user bash -c "cat >> '${REAL_HOME}/.config/kitty/kitty.conf' << EOF
+dynamic_background_opacity yes
+background_opacity 0.85
+EOF"

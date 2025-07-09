@@ -18,6 +18,7 @@ run_sudo apt install -y xdotool # numlock light
 run_sudo apt install -y rofi # menu/launcher
 run_sudo apt install -y pasystray # tray audio
 run_sudo apt install -y feh # wallpaper etc.
+run_sudo apt install -y compton # compositing
 
 # Create i3 config directory
 run_as_user mkdir -p "${REAL_HOME}/.config/i3"

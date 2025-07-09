@@ -14,4 +14,4 @@ run_as_user "${REAL_HOME}/.fzf/install" --key-bindings --no-completion --no-upda
 
 # Install ripgrep, fd-find, and screen via apt
 run_sudo apt update
-run_sudo apt install -y ripgrep fd-find screen
+run_sudo apt install -y ripgrep fd-find screen pipx
