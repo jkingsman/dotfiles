@@ -11,14 +11,13 @@ DOTFILES_DIR="${REAL_HOME}/dotfiles"
 
 # Install i3 and related packages
 run_sudo apt update
-run_sudo apt install -y \
-  i3-wm \
-  i3status \
-  i3lock \
-  dunst \
-  xdotool \
-  rofi \
-  feh
+# i3 basics
+run_sudo apt install -y i3-wm i3status i3lock
+run_sudo apt isntall -y dunst # notifications
+run_sudo apt install -y xdotool # numlock light
+run_sudo apt install -y rofi # menu/launcher
+run_sudo apt install -y pasystray # tray audio
+run_sudo apt install -y feh # wallpaper etc.
 
 # Create i3 config directory
 run_as_user mkdir -p "${REAL_HOME}/.config/i3"
