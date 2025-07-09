@@ -20,18 +20,15 @@ run_as_user mkdir -p "${REAL_HOME}/.config/kitty/themes"
 run_as_user cp "${DOTFILES_DIR}/qol/terminal_editor_themes/AtomOneDarkCustomized/kitty.AtomOneDarkCustomized.conf" \
   "${REAL_HOME}/.config/kitty/themes/"
 
-# Create/update kitty config with theme inclusion
-echo "include themes/kitty.AtomOneDarkCustomized.conf" | run_as_user tee -a "${REAL_HOME}/.config/kitty/kitty.conf" >/dev/null
-
 # Configure Hasklig font
 run_as_user bash -c "cat >> '${REAL_HOME}/.config/kitty/kitty.conf' << EOF
+include themes/kitty.AtomOneDarkCustomized.conf
+
 font_family      Hasklig Light
 bold_font        Hasklig Medium
 italic_font      Hasklig Light Italic
 bold_italic_font Hasklig Medium Italic
+
+font_size 13.0
 EOF"
 
-run_as_user bash -c "cat >> '${REAL_HOME}/.config/kitty/kitty.conf' << EOF
-dynamic_background_opacity yes
-background_opacity 0.85
-EOF"
