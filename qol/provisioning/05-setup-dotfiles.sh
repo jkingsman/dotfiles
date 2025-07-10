@@ -10,7 +10,7 @@ REAL_HOME=$(get_real_home)
 DOTFILES_DIR="${REAL_HOME}/dotfiles"
 
 if [ -d "$DOTFILES_DIR" ]; then
-  run_as_user git -C "$DOTFILES_DIR" pull
+  echo "Dotfiles directory already exists: $DOTFILES_DIR"
 else
   run_as_user git clone https://github.com/jkingsman/dotfiles.git "$DOTFILES_DIR"
 fi
