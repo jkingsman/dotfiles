@@ -14,11 +14,11 @@ run_sudo apt update
 # i3 basics
 run_sudo apt install -y i3-wm i3status i3lock
 run_sudo apt install -y dunst # notifications
-run_sudo apt install -y xdotool # numlock light
+run_sudo apt install -y xdotool # numlock enable on login
 run_sudo apt install -y rofi # menu/launcher
 run_sudo apt install -y pasystray # tray audio
-run_sudo apt install -y feh # wallpaper etc.
-run_sudo apt install -y compton # compositing
+run_sudo apt install -y feh # wallpaper set
+run_sudo apt install -y compton # compositing -- don't do much with transparency but good to have
 
 # Create i3 config directory
 run_as_user mkdir -p "${REAL_HOME}/.config/i3"
