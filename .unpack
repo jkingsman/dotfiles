@@ -3,7 +3,7 @@
 DIR="$(dirname "${BASH_SOURCE[0]}")"
 
 # place files
-declare -a files=(".bashrc_personal" ".bash_aliases" ".bash_env" ".bash_prompt" ".git_alias" ".vimrc" ".profile" ".xinitrc")
+declare -a files=(".bashrc_personal" ".bash_aliases" ".bash_env" ".bash_prompt" ".git_alias" ".vimrc" ".profile")
 for i in "${files[@]}"
 do
    if test -e "$DIR/$i"; then
@@ -42,3 +42,17 @@ echo "Configuring git globals..."
 git config --global --type bool push.autoSetupRemote true
 git config --global pull.rebase true
 git config --global core.autocrlf input
+
+echo "Configuring global git ignores..."
+# Create .config directory if it doesn't exist
+mkdir -p "$HOME/.config"
+
+# Create/recreate global gitignore file with our entries
+GLOBAL_GITIGNORE="$HOME/.config/gitignore_global"
+cat > "$GLOBAL_GITIGNORE" << 'EOF'
+CLAUDE.md
+.claude/
+EOF
+
+# Configure git to use the global gitignore file
+git config --global core.excludesfile "$GLOBAL_GITIGNORE"
