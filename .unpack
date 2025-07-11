@@ -42,3 +42,19 @@ echo "Configuring git globals..."
 git config --global --type bool push.autoSetupRemote true
 git config --global pull.rebase true
 git config --global core.autocrlf input
+
+echo "Configuring global git ignores..."
+# Create .config directory if it doesn't exist
+mkdir -p "$HOME/.config"
+
+# Create a global gitignore file if it doesn't exist
+GLOBAL_GITIGNORE="$HOME/.config/gitignore_global"
+touch "$GLOBAL_GITIGNORE"
+
+# Add CLAUDE.md to global gitignore if not already present
+if ! grep -q "^CLAUDE\.md$" "$GLOBAL_GITIGNORE" 2>/dev/null; then
+    echo "CLAUDE.md" >> "$GLOBAL_GITIGNORE"
+fi
+
+# Configure git to use the global gitignore file
+git config --global core.excludesfile "$GLOBAL_GITIGNORE"
