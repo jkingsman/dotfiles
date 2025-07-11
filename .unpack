@@ -47,14 +47,12 @@ echo "Configuring global git ignores..."
 # Create .config directory if it doesn't exist
 mkdir -p "$HOME/.config"
 
-# Create a global gitignore file if it doesn't exist
+# Create/recreate global gitignore file with our entries
 GLOBAL_GITIGNORE="$HOME/.config/gitignore_global"
-touch "$GLOBAL_GITIGNORE"
-
-# Add CLAUDE.md to global gitignore if not already present
-if ! grep -q "^CLAUDE\.md$" "$GLOBAL_GITIGNORE" 2>/dev/null; then
-    echo "CLAUDE.md" >> "$GLOBAL_GITIGNORE"
-fi
+cat > "$GLOBAL_GITIGNORE" << 'EOF'
+CLAUDE.md
+.claude/
+EOF
 
 # Configure git to use the global gitignore file
 git config --global core.excludesfile "$GLOBAL_GITIGNORE"
