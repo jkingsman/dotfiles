@@ -213,7 +213,12 @@ alias search="grep -irnw . -e" # case insensitive contents grep
 
 yamldump() {
   # stupid but yaml parsing holds the anchors until you resolve the object
-  python3 -c "import yaml; import json; print(yaml.safe_dump(json.loads(json.dumps(yaml.safe_load(open('$1', 'r'))))))"
+  local output=$(python3 -c "import yaml; import json; print(yaml.safe_dump(json.loads(json.dumps(yaml.safe_load(open('$1', 'r'))))))")
+  if command -v yq > /dev/null 2>&1; then
+    echo "$output" | yq
+  else
+    echo "$output"
+  fi
 }
 
 # pretty print command with escaped newlines, indents, etc.
