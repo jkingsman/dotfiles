@@ -19,6 +19,7 @@ run_sudo apt install -y rofi # menu/launcher
 run_sudo apt install -y pasystray # tray audio
 run_sudo apt install -y feh # wallpaper set
 run_sudo apt install -y compton # compositing -- don't do much with transparency but good to have
+run_sudo apt install -y xinput # mouse management
 
 # Create i3 config directory
 run_as_user mkdir -p "${REAL_HOME}/.config/i3"
