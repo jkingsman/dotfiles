@@ -353,6 +353,7 @@ drun (){
 alias dockerkill='docker kill $(docker ps -q)'
 alias dockerstop='docker kill $(docker ps -q)'
 alias dockerclean='docker kill $(docker ps -q); docker system prune -f; docker image prune -af; docker buildx prune -f; docker volume prune -f; docker network prune -f'
+alias dockerdel='docker rmi -f'
 
 # turn a markdown file into an epub
 ebookify(){
