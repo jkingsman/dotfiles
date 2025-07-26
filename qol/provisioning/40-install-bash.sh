@@ -4,7 +4,6 @@
 set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
 
 cd /tmp
 curl -O http://ftp.gnu.org/gnu/bash/bash-5.2.tar.gz
@@ -13,7 +12,7 @@ cd bash-5.2
 
 ./configure --prefix=/usr/local
 make
-run_sudo make install
+sudo make install
 
 # Find shells file
 if [ -f /etc/shells ]; then
@@ -27,13 +26,13 @@ fi
 # Add to shells file if found
 if [ -n "$SHELLS_FILE" ]; then
   if ! grep -q "^/usr/local/bin/bash$" "$SHELLS_FILE"; then
-    run_sudo bash -c "echo /usr/local/bin/bash >> $SHELLS_FILE"
+    sudo bash -c "echo /usr/local/bin/bash >> $SHELLS_FILE"
   fi
 fi
 
 # Change shell for current user
 if command -v chsh >/dev/null 2>&1; then
-  run_sudo chsh -s /usr/local/bin/bash "$USER"
+  sudo chsh -s /usr/local/bin/bash "$USER"
 else
-  run_sudo usermod -s /usr/local/bin/bash "$USER"
+  sudo usermod -s /usr/local/bin/bash "$USER"
 fi

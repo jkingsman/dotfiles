@@ -4,13 +4,12 @@
 set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
 
 DOTFILES_DIR="${HOME}/dotfiles"
 
 # Install kitty
-run_sudo apt-get update
-run_sudo apt-get install -y kitty
+sudo apt-get update
+sudo apt-get install -y kitty
 
 # Create kitty config directories
 mkdir -p "${HOME}/.config/kitty/themes"

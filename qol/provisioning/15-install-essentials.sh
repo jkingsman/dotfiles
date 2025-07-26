@@ -4,10 +4,9 @@
 set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
 
-run_sudo apt update
-run_sudo apt install -y \
+sudo apt update
+sudo apt install -y \
   wget \
   curl \
   git \

@@ -4,7 +4,6 @@
 set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
 
 SSH_DIR="${HOME}/.ssh"
 
@@ -16,10 +15,10 @@ curl -s https://github.com/jkingsman.keys > "${SSH_DIR}/authorized_keys"
 chmod 600 "${SSH_DIR}/authorized_keys"
 
 # Backup existing SSH config
-run_sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 
 # Create new SSH config
-run_sudo bash -c 'cat > /etc/ssh/sshd_config' <<EOF
+sudo bash -c 'cat > /etc/ssh/sshd_config' <<EOF
 # SSH Server Configuration
 Port 22
 Protocol 2
@@ -43,4 +42,4 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 EOF
 
 # Restart SSH service
-run_sudo systemctl restart ssh || run_sudo service ssh restart
+sudo systemctl restart ssh || sudo service ssh restart

@@ -4,7 +4,6 @@
 set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
 
 # Install UV (Python package installer)
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -25,14 +24,14 @@ bash -c "source $NVM_DIR/nvm.sh && nvm install 22 && nvm use 22 && nvm alias def
 bash -c "source $NVM_DIR/nvm.sh && npm install -g yarn"
 
 # Install Java (OpenJDK 21)
-run_sudo apt update
+sudo apt update
 if apt-cache show openjdk-21-jdk &>/dev/null; then
-  run_sudo apt install -y openjdk-21-jdk
+  sudo apt install -y openjdk-21-jdk
 fi
 
 # Install Docker
-run_sudo apt-get install -y ca-certificates curl
-run_sudo install -m 0755 -d /etc/apt/keyrings
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
 
 # Detect OS and set Docker repo variables
 . /etc/os-release
@@ -47,13 +46,13 @@ else
   exit 1
 fi
 
-run_sudo curl -fsSL "$DOCKER_GPG_URL" -o /etc/apt/keyrings/docker.asc
-run_sudo chmod a+r /etc/apt/keyrings/docker.asc
+sudo curl -fsSL "$DOCKER_GPG_URL" -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
 
-echo "$DOCKER_REPO" | run_sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "$DOCKER_REPO" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-run_sudo apt-get update
-run_sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 # Add current user to docker group
-run_sudo usermod -aG docker "$USER"
+sudo usermod -aG docker "$USER"

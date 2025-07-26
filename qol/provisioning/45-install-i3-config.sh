@@ -4,21 +4,20 @@
 set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
 
 DOTFILES_DIR="${HOME}/dotfiles"
 
 # Install i3 and related packages
-run_sudo apt update
+sudo apt update
 # i3 basics
-run_sudo apt install -y i3-wm i3status i3lock
-run_sudo apt install -y dunst # notifications
-run_sudo apt install -y xdotool # numlock enable on login
-run_sudo apt install -y rofi # menu/launcher
-run_sudo apt install -y pasystray # tray audio
-run_sudo apt install -y feh # wallpaper set
-run_sudo apt install -y compton # compositing -- don't do much with transparency but good to have
-run_sudo apt install -y xinput # mouse management
+sudo apt install -y i3-wm i3status i3lock
+sudo apt install -y dunst # notifications
+sudo apt install -y xdotool # numlock enable on login
+sudo apt install -y rofi # menu/launcher
+sudo apt install -y pasystray # tray audio
+sudo apt install -y feh # wallpaper set
+sudo apt install -y compton # compositing -- don't do much with transparency but good to have
+sudo apt install -y xinput # mouse management
 
 # Create i3 config directory
 mkdir -p "${HOME}/.config/i3"

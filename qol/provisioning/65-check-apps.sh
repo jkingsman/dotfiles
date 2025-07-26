@@ -4,7 +4,6 @@
 set +ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-source "${SCRIPT_DIR}/utils.sh"
 
 check_version() {
   if command -v "$1" &>/dev/null; then
