@@ -28,8 +28,11 @@ run_as_user mkdir -p "${REAL_HOME}/.config/i3"
 run_as_user cp "${DOTFILES_DIR}/qol/provisioning/i3.config" "${REAL_HOME}/.config/i3/config"
 
 # move i3status into place
-mkdir -p ~/.config/i3status
-cp /etc/i3status.conf ~/.config/i3status/config
+mkdir -p "${REAL_HOME}/.config/i3status"
+cp /etc/i3status.conf "${REAL_HOME}/.config/i3status/config"
+
+# move tap to click and scroll config into place
+cp "${DOTFILES_DIR}/qol/provisioning/90-touchpad.conf" "${REAL_HOME}/.config/xorg.conf.d/90-touchpad.conf"
 
 # Check if battery exists
 has_battery=false
