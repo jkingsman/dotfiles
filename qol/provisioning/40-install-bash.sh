@@ -31,10 +31,9 @@ if [ -n "$SHELLS_FILE" ]; then
   fi
 fi
 
-# Change shell for real user
-REAL_USER=$(get_real_user)
+# Change shell for current user
 if command -v chsh >/dev/null 2>&1; then
-  run_sudo chsh -s /usr/local/bin/bash "$REAL_USER"
+  run_sudo chsh -s /usr/local/bin/bash "$USER"
 else
-  run_sudo usermod -s /usr/local/bin/bash "$REAL_USER"
+  run_sudo usermod -s /usr/local/bin/bash "$USER"
 fi

@@ -6,18 +6,17 @@ set -ex
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/utils.sh"
 
-REAL_HOME=$(get_real_home)
-DOTFILES_DIR="${REAL_HOME}/dotfiles"
+DOTFILES_DIR="${HOME}/dotfiles"
 
 # Create font directories
-run_as_user mkdir -p "${REAL_HOME}/.local/share/fonts"
-run_as_user mkdir -p "${REAL_HOME}/.fonts"
+mkdir -p "${HOME}/.local/share/fonts"
+mkdir -p "${HOME}/.fonts"
 
 # Extract Hasklig fonts to both locations
 cd "${DOTFILES_DIR}/qol"
-run_as_user unzip -o hasklig.zip -d "${REAL_HOME}/.local/share/fonts/"
-run_as_user unzip -o hasklig.zip -d "${REAL_HOME}/.fonts/"
+unzip -o hasklig.zip -d "${HOME}/.local/share/fonts/"
+unzip -o hasklig.zip -d "${HOME}/.fonts/"
 
 # Refresh font cache for both directories
-run_as_user fc-cache -fv "${REAL_HOME}/.local/share/fonts/"
-run_as_user fc-cache -fv "${REAL_HOME}/.fonts/"
+fc-cache -fv "${HOME}/.local/share/fonts/"
+fc-cache -fv "${HOME}/.fonts/"

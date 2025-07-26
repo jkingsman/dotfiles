@@ -6,8 +6,7 @@ set -ex
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "${SCRIPT_DIR}/utils.sh"
 
-REAL_HOME=$(get_real_home)
-DOTFILES_DIR="${REAL_HOME}/dotfiles"
+DOTFILES_DIR="${HOME}/dotfiles"
 
 # Install i3 and related packages
 run_sudo apt update
@@ -22,17 +21,17 @@ run_sudo apt install -y compton # compositing -- don't do much with transparency
 run_sudo apt install -y xinput # mouse management
 
 # Create i3 config directory
-run_as_user mkdir -p "${REAL_HOME}/.config/i3"
+mkdir -p "${HOME}/.config/i3"
 
 # Copy i3 config file
-run_as_user cp "${DOTFILES_DIR}/qol/provisioning/i3.config" "${REAL_HOME}/.config/i3/config"
+cp "${DOTFILES_DIR}/qol/provisioning/i3.config" "${HOME}/.config/i3/config"
 
 # move i3status into place
-mkdir -p "${REAL_HOME}/.config/i3status"
-cp /etc/i3status.conf "${REAL_HOME}/.config/i3status/config"
+mkdir -p "${HOME}/.config/i3status"
+cp /etc/i3status.conf "${HOME}/.config/i3status/config"
 
 # move tap to click and scroll config into place
-cp "${DOTFILES_DIR}/qol/provisioning/90-touchpad.conf" "${REAL_HOME}/.config/xorg.conf.d/90-touchpad.conf"
+sudo cp "${DOTFILES_DIR}/qol/provisioning/90-touchpad.conf" "/etc/X11/xorg.conf.d/90-touchpad.conf"
 
 # Check if battery exists
 has_battery=false
