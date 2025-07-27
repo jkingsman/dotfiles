@@ -30,7 +30,7 @@ bold_italic_font Hasklig Medium Italic
 font_size 13.0
 
 map ctrl+w close_window
-map ctrl+t new_tab
+map ctrl+shift+t new_tab
 map ctrl+shift+d launch --location=vsplit
 EOF"
 

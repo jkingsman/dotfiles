@@ -282,6 +282,7 @@ fi
 # if key-bindings.bash is not found, add $HOME/.fzf/bin to the PATH
 if [[ -d "$HOME/.fzf/bin" ]]; then
     export PATH="$HOME/.fzf/bin:$PATH"
+    export FZF_CTRL_T_COMMAND=
     source ~/.fzf/shell/key-bindings.bash
 
     # "?" toggles preview to show multiline/wrapped comands
