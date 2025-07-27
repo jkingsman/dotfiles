@@ -14,19 +14,19 @@ sudo apt install -y make build-essential libssl-dev zlib1g-dev \
   libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
 # Install pyenv
-if ! command -v pyenv >/dev/null; then
+if ! command -v pyenv >/dev/null && [ ! -d "${HOME}/.pyenv" ]; then
   curl https://pyenv.run | bash
+
+  # Setup pyenv environment
+  export PYENV_ROOT="${HOME}/.pyenv"
+  export PATH="$PYENV_ROOT/bin:$PATH"
+  eval "$(pyenv init -)"
+  eval "$(pyenv virtualenv-init -)" 2>/dev/null || true
+
+  # Install Python version if not already installed
+  if ! pyenv versions | grep -q "$PYTHON_VERSION"; then
+    pyenv install "$PYTHON_VERSION"
+  fi
+
+  pyenv global "$PYTHON_VERSION"
 fi
-
-# Setup pyenv environment
-export PYENV_ROOT="${HOME}/.pyenv"
-export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-eval "$(pyenv virtualenv-init -)" 2>/dev/null || true
-
-# Install Python version if not already installed
-if ! pyenv versions | grep -q "$PYTHON_VERSION"; then
-  pyenv install "$PYTHON_VERSION"
-fi
-
-pyenv global "$PYTHON_VERSION"
