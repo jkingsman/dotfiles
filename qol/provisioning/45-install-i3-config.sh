@@ -30,6 +30,7 @@ mkdir -p "${HOME}/.config/i3status"
 cp /etc/i3status.conf "${HOME}/.config/i3status/config"
 
 # move tap to click and scroll config into place
+sudo mkdir -p /etc/X11/xorg.conf.d
 sudo cp "${DOTFILES_DIR}/qol/provisioning/90-touchpad.conf" "/etc/X11/xorg.conf.d/90-touchpad.conf"
 
 # Check if battery exists
