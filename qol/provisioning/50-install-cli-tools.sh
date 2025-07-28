@@ -13,4 +13,4 @@ fi
 
 # Install ripgrep, fd-find, and screen via apt
 sudo apt update
-sudo apt install -y ripgrep fd-find screen pipx
+sudo apt install -y ripgrep fd-find screen pipx wireguard

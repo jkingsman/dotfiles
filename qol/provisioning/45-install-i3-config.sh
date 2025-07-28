@@ -33,6 +33,8 @@ cp /etc/i3status.conf "${HOME}/.config/i3status/config"
 sudo mkdir -p /etc/X11/xorg.conf.d
 sudo cp "${DOTFILES_DIR}/qol/provisioning/90-touchpad.conf" "/etc/X11/xorg.conf.d/90-touchpad.conf"
 
+echo "Xft.dpi: 120" >> ~/.Xresources
+
 # Check if battery exists
 has_battery=false
 if ls /sys/class/power_supply/BAT* >/dev/null 2>&1; then
