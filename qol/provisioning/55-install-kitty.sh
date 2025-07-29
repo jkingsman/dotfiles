@@ -19,18 +19,5 @@ cp "${DOTFILES_DIR}/qol/terminal_editor_themes/AtomOneDarkCustomized/kitty.AtomO
   "${HOME}/.config/kitty/themes/"
 
 # Configure Hasklig font
-bash -c "cat >> '${HOME}/.config/kitty/kitty.conf' << EOF
-include themes/kitty.AtomOneDarkCustomized.conf
-
-font_family      Hasklig Light
-bold_font        Hasklig Medium
-italic_font      Hasklig Light Italic
-bold_italic_font Hasklig Medium Italic
-
-font_size 13.0
-
-map ctrl+w close_window
-map ctrl+shift+t new_tab
-map ctrl+shift+d launch --location=vsplit
-EOF"
+cp "${DOTFILES_DIR}/qol/provisioning/kitty.conf" "${HOME}/.config/kitty/kitty.conf"
 
