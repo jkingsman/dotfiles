@@ -19,6 +19,7 @@ do
     echo "echo "$(cat ~/.atl_bashrc | base64)" | base64 -d >> .atl_bashrc"
     echo "echo "$(cat ~/dotfiles/qol/minimalwakelock.html | base64)" | base64 -d >> minimalwakelock.html"
     echo "chmod +x ${i}"
+    echo "chmod +x .atl_bashrc"
     echo ""
 done
 

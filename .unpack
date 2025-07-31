@@ -3,7 +3,7 @@
 DIR="$(dirname "${BASH_SOURCE[0]}")"
 
 # place files
-declare -a files=(".bashrc_personal" ".bash_aliases" ".bash_env" ".bash_prompt" ".git_alias" ".vimrc" ".profile")
+declare -a files=(".bashrc_personal" ".bash_aliases" ".bash_env" ".bash_prompt" ".git_alias" ".vimrc" ".profile" ".atl_bashrc")
 for i in "${files[@]}"
 do
    if test -e "$DIR/$i"; then
