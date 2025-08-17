@@ -6,3 +6,4 @@
 * Steam
 * Discord
 * Spotify
+* Typora
