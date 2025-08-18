@@ -35,6 +35,7 @@ git config --global alias.mergemaster '!git fetch origin master:master && git me
 git config --global alias.mergemain '!git fetch origin main:main && git merge main'
 git config --global alias.recent '!git for-each-ref --sort=-committerdate refs/heads/ --count=10 --format='"'"'%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'"'"''
 git config --global alias.finmerge '!git add . && git commit --no-edit && git push'
+git config --global alias.rebasemain '!git pull --rebase origin master && git push --force'
 git config --global alias.finrebase '!git add . && GIT_EDITOR=true git rebase --continue && git push --force'
 git config --global alias.showdroppedstash '!git fsck --unreachable | grep commit | cut -d" " -f3 | xargs git log --merges --no-walk --grep=WIP'
 
