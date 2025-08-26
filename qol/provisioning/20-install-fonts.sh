@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Install Hasklig fonts
+# Install fonts
 
 set -ex
 
@@ -11,10 +11,10 @@ DOTFILES_DIR="${HOME}/dotfiles"
 mkdir -p "${HOME}/.local/share/fonts"
 mkdir -p "${HOME}/.fonts"
 
-# Extract Hasklig fonts to both locations
+# Extract fonts to both locations
 cd "${DOTFILES_DIR}/qol"
-unzip -o hasklig.zip -d "${HOME}/.local/share/fonts/"
-unzip -o hasklig.zip -d "${HOME}/.fonts/"
+unzip -o fonts.zip -d "${HOME}/.local/share/fonts/"
+unzip -o fonts.zip -d "${HOME}/.fonts/"
 
 # Refresh font cache for both directories
 fc-cache -fv "${HOME}/.local/share/fonts/"
