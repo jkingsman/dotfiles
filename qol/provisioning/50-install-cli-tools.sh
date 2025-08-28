@@ -12,6 +12,6 @@ if [ ! -d "${HOME}/.fzf" ]; then
     "${HOME}/.fzf/install" --key-bindings --no-completion --no-update-rc --no-zsh --no-fish
 fi
 
-# Install ripgrep, fd-find, and screen via apt
-sudo apt update
-sudo apt install -y ripgrep fd-find screen pipx wireguard
+# Install ripgrep, fd, and screen via apk
+sudo apk update
+sudo apk add --no-cache ripgrep fd screen py3-pip pipx wireguard-tools

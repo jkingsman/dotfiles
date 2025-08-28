@@ -32,14 +32,14 @@ PubkeyAuthentication yes
 PasswordAuthentication no
 PermitEmptyPasswords no
 ChallengeResponseAuthentication no
-UsePAM yes
+UsePAM no
 
 # Other settings
 X11Forwarding yes
 PrintMotd no
 AcceptEnv LANG LC_*
-Subsystem sftp /usr/lib/openssh/sftp-server
+Subsystem sftp /usr/lib/ssh/sftp-server
 EOF
 
 # Restart SSH service
-sudo systemctl restart ssh || sudo service ssh restart
+sudo rc-service sshd restart || sudo service sshd restart

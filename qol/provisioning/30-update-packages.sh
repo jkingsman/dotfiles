@@ -5,6 +5,6 @@ set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-sudo apt update
-sudo apt upgrade -y
-sudo apt autoremove -y
+sudo apk update
+sudo apk upgrade
+# Alpine doesn't have autoremove, packages are minimal by default

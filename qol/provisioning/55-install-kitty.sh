@@ -8,8 +8,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="${HOME}/dotfiles"
 
 # Install kitty
-sudo apt-get update
-sudo apt-get install -y kitty
+sudo apk update
+sudo apk add --no-cache kitty
 
 # Create kitty config directories
 mkdir -p "${HOME}/.config/kitty/themes"

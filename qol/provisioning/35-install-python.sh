@@ -8,10 +8,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PYTHON_VERSION="3.12.0"
 
 # Install pyenv dependencies
-sudo apt update
-sudo apt install -y make build-essential libssl-dev zlib1g-dev \
-  libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
-  libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+sudo apk update
+sudo apk add --no-cache make build-base openssl-dev zlib-dev \
+  bzip2-dev readline-dev sqlite-dev wget curl llvm \
+  ncurses-dev xz tk-dev libxml2-dev libxslt-dev libffi-dev xz-dev
 
 # Install pyenv
 if ! command -v pyenv >/dev/null && [ ! -d "${HOME}/.pyenv" ]; then

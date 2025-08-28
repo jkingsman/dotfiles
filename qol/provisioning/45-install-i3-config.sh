@@ -8,18 +8,18 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="${HOME}/dotfiles"
 
 # Install i3 and related packages
-sudo apt update
+sudo apk update
 # i3 basics
-sudo apt install -y i3-wm i3status i3lock # i3 core
-sudo apt install -y dunst # notifications
-sudo apt install -y xdotool # numlock enable on login
-sudo apt install -y rofi # menu/launcher
-sudo apt install -y pasystray # tray audio
-sudo apt install -y feh # wallpaper set
-sudo apt install -y picom # compositing -- don't do much with transparency but good to have
-sudo apt install -y xinput # mouse/trackpad management
-sudo apt install -y brightnessctl # brightness adjustment
-sudo apt install -y flameshot # screenshots
+sudo apk add --no-cache i3wm i3status i3lock # i3 core
+sudo apk add --no-cache dunst # notifications
+sudo apk add --no-cache xdotool # numlock enable on login
+sudo apk add --no-cache rofi # menu/launcher
+sudo apk add --no-cache pasystray # tray audio
+sudo apk add --no-cache feh # wallpaper set
+sudo apk add --no-cache picom # compositing -- don't do much with transparency but good to have
+sudo apk add --no-cache xinput # mouse/trackpad management
+sudo apk add --no-cache brightnessctl # brightness adjustment
+sudo apk add --no-cache flameshot # screenshots
 
 # Create i3 config directory
 mkdir -p "${HOME}/.config/i3"

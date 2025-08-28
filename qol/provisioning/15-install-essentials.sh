@@ -5,13 +5,13 @@ set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-sudo apt update
-sudo apt install -y \
+sudo apk update
+sudo apk add --no-cache \
   wget \
   curl \
   git \
   vim \
-  build-essential \
+  build-base \
   gcc \
   g++ \
   make \
@@ -19,8 +19,8 @@ sudo apt install -y \
   ruby \
   openssh-client \
   openssh-server \
-  dnsutils \
-  iputils-ping \
+  bind-tools \
+  iputils \
   htop \
   lsof \
   file \
@@ -29,9 +29,8 @@ sudo apt install -y \
   tar \
   gzip \
   bzip2 \
-  p7zip-full \
+  p7zip \
   ca-certificates \
   gnupg \
-  apt-transport-https \
   sudo \
   fontconfig

@@ -38,17 +38,15 @@ else
   echo "❌ ripgrep: not found"
 fi
 
-check_version fd
-
-# fd-find installs as 'fdfind' on Debian/Ubuntu
-if command -v fdfind &>/dev/null; then
-  ver=$(fdfind --version)
-  echo "✅ fd-find: $ver"
+# fd is just 'fd' on Alpine
+if command -v fd &>/dev/null; then
+  ver=$(fd --version)
+  echo "✅ fd: $ver"
 else
-  echo "❌ fd-find: not found"
+  echo "❌ fd: not found"
 fi
 
 echo -e "\n=== Presence Checks ==="
-for cmd in pyenv pip poetry uv curl ip ifconfig ipconfig vim emacs jq perl npm nvm ruby rvm mvn gradle nginx caddy docker fzf rg fdfind kitty; do
+for cmd in pyenv pip poetry uv curl ip ifconfig ipconfig vim emacs jq perl npm nvm ruby rvm mvn gradle nginx caddy docker fzf rg fd kitty; do
   check_presence "$cmd"
 done
