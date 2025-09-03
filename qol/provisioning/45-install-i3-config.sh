@@ -10,7 +10,7 @@ DOTFILES_DIR="${HOME}/dotfiles"
 # Install i3 and related packages
 sudo apt update
 # i3 basics
-sudo apt install -y i3-wm i3status i3lock # i3 core
+sudo apt install -y i3-wm i3status i3lock xorg # i3 core
 sudo apt install -y dunst # notifications
 sudo apt install -y xdotool # numlock enable on login
 sudo apt install -y rofi # menu/launcher
