@@ -21,6 +21,7 @@ sudo apt install -y picom # compositing -- don't do much with transparency but g
 sudo apt install -y xinput # mouse/trackpad management
 sudo apt install -y brightnessctl # brightness adjustment
 sudo apt install -y flameshot # screenshots
+sudo apt install -y network-manager-gnome # net management
 
 # Create i3 config directory
 mkdir -p "${HOME}/.config/i3"
