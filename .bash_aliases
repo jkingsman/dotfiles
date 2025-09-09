@@ -53,8 +53,6 @@ alias 666='chmod -R 666'
 alias 755='chmod -R 755'
 alias 777='chmod -R 777'
 
-alias unpacksshkey='cd ~/.ssh; gpg -d --output id_ed25519 id_ed25519.crypt; chmod 600 id_ed25519'
-
 # ------------------------------------------------------------------
 # archive aliases
 # ------------------------------------------------------------------
@@ -131,6 +129,21 @@ alias tfs="terraform state"
 # ------------------------------------------------------------------
 alias srv="python -m SimpleHTTPServer || python -m http.server 8000 || python3 -m http.server 8000"
 alias srv3="python -m SimpleHTTPServer || python -m http.server 8000 || python3 -m http.server 8000"
+
+# ------------------------------------------------------------------
+# Dropbox meta
+# ------------------------------------------------------------------
+dbpull() {
+  scp "jack@192.168.1.100:/D:/Dropbox/$1" "$1"
+}
+
+dbpush() {
+  scp "$1" "jack@192.168.1.100:/D:/Dropbox/"
+}
+
+dbls() {
+  ssh "jack@192.168.1.100" "ubuntu run ls /mnt/d/Dropbox/"
+}
 
 # ------------------------------------------------------------------
 # Networking
@@ -338,6 +351,9 @@ command -v sha1sum > /dev/null || alias sha1sum="shasum"
 
 # Run claude command with NVM enabled
 alias c="enablenvm && claude"
+
+# unpack encrypted ssh key
+alias unpacksshkey='cd ~/.ssh; gpg -d --output id_ed25519 id_ed25519.gpg; chmod 600 id_ed25519'
 
 # Reload the shell (i.e. invoke as a login shell)
 alias reload="exec ${SHELL} -l"
