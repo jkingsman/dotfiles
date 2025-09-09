@@ -35,3 +35,8 @@ sudo apt install -y \
   apt-transport-https \
   sudo \
   fontconfig
+
+# check if string "Raspberry Pi" is in /proc/cpuinfo and set SW rendering on kitty
+if grep -q "Raspberry Pi" /proc/cpuinfo; then
+    sudo apt install -y firefox-esr
+fi
