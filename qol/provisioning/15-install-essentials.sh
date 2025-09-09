@@ -13,6 +13,7 @@ sudo apt install -y \
   vim \
   build-essential \
   gcc \
+  gnupg \
   g++ \
   make \
   perl \

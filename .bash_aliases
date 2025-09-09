@@ -53,6 +53,8 @@ alias 666='chmod -R 666'
 alias 755='chmod -R 755'
 alias 777='chmod -R 777'
 
+alias unpacksshkey='cd ~/.ssh; gpg -d --output id_ed25519 id_ed25519.crypt; chmod 600 id_ed25519'
+
 # ------------------------------------------------------------------
 # archive aliases
 # ------------------------------------------------------------------
