@@ -13,7 +13,7 @@ chmod 700 "$SSH_DIR"
 # Download authorized keys from GitHub
 curl -s https://github.com/jkingsman.keys > "${SSH_DIR}/authorized_keys"
 chmod 600 "${SSH_DIR}/authorized_keys"
-cp "${SCRIPT_DIR}/id_ed25519.gpg" "${SSH_DIR}/id_ed25519.gpg"
+cp "${SCRIPT_DIR}/data/id_ed25519.gpg" "${SSH_DIR}/id_ed25519.gpg"
 
 # Backup existing SSH config
 sudo cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak

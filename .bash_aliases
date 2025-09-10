@@ -7,6 +7,7 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
 alias ~="cd ~"
+alias dotfiles="cd ~/dotfiles"
 db() { cd /mnt/d/Dropbox 2>/dev/null || cd ~/Library/CloudStorage/Dropbox 2>/dev/null || cd ~/Dropbox; }
 dl() { cd /mnt/d/Downloads 2>/dev/null || cd ~/Downloads; }
 dt() { cd /mnt/d/Desktop 2>/dev/null || cd ~/Desktop; }
