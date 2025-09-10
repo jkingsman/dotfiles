@@ -5,8 +5,8 @@ set -ex
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+cp "${SCRIPT_DIR}/data/bash-5.2.tar.gz" /tmp/bash-5.2.tar.gz
 cd /tmp
-curl -O http://ftp.gnu.org/gnu/bash/bash-5.2.tar.gz
 tar xzf bash-5.2.tar.gz
 cd bash-5.2
 
