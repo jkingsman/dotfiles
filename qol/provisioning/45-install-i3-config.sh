@@ -10,18 +10,27 @@ DOTFILES_DIR="${HOME}/dotfiles"
 # Install i3 and related packages
 sudo apt update
 # i3 basics
-sudo apt install -y x11-xserver-utils xorg # xorg core
-sudo apt install -y i3-wm i3status i3lock # i3 core
-sudo apt install -y dunst # notifications
-sudo apt install -y xdotool # numlock enable on login
-sudo apt install -y rofi # menu/launcher
-sudo apt install -y pasystray # tray audio
-sudo apt install -y feh # wallpaper set
-sudo apt install -y picom # compositing -- don't do much with transparency but good to have
-sudo apt install -y xinput # mouse/trackpad management
-sudo apt install -y brightnessctl # brightness adjustment
-sudo apt install -y flameshot # screenshots
-sudo apt install -y network-manager-gnome # net management
+
+# List of packages to install, with comments for each
+GUI_PACKAGES=(
+    x11-xserver-utils   # xorg core
+    xorg               # xorg core
+    i3-wm              # i3 core
+    i3status           # i3 core
+    i3lock             # i3 core
+    dunst              # notifications
+    xdotool            # numlock enable on login
+    rofi               # menu/launcher
+    pasystray          # tray audio
+    feh                # wallpaper set
+    picom              # compositing -- don't do much with transparency but good to have
+    xinput             # mouse/trackpad management
+    brightnessctl      # brightness adjustment
+    flameshot          # screenshots
+    network-manager-gnome # net management
+    firefox-esr        # browser
+)
+sudo apt install -y "${GUI_PACKAGES[@]}"
 
 # Create i3 config directory
 mkdir -p "${HOME}/.config/i3"

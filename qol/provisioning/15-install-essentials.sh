@@ -18,6 +18,7 @@ sudo apt install -y \
   make \
   perl \
   ruby \
+  openresolv \
   openssh-client \
   openssh-server \
   dnsutils \
@@ -36,13 +37,3 @@ sudo apt install -y \
   apt-transport-https \
   sudo \
   fontconfig
-
-# check if string "Raspberry Pi" is in /proc/cpuinfo and set SW rendering on kitty
-if grep -q "Raspberry Pi" /proc/cpuinfo; then
-  wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-  sudo dpkg -i google-chrome-stable_current_amd64.deb
-  sudo apt-get install -f
-  google-chrome --version
-
-  sudo apt install -y firefox-esr
-fi
