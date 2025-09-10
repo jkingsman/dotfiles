@@ -39,4 +39,5 @@ sudo apt install -y \
 
 if grep -q "Raspberry Pi" /proc/cpuinfo; then
     sudo apt install -y openresolv # necessary for wg-quick on Raspberry Pi
+    sudo apt install -y firefox-esr # for happy times
 fi

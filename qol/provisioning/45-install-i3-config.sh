@@ -28,7 +28,6 @@ GUI_PACKAGES=(
     brightnessctl      # brightness adjustment
     flameshot          # screenshots
     network-manager-gnome # net management
-    firefox-esr        # browser
 )
 sudo apt install -y "${GUI_PACKAGES[@]}"
 
