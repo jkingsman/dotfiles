@@ -18,7 +18,6 @@ sudo apt install -y \
   make \
   perl \
   ruby \
-  openresolv \
   openssh-client \
   openssh-server \
   dnsutils \
@@ -37,3 +36,7 @@ sudo apt install -y \
   apt-transport-https \
   sudo \
   fontconfig
+
+if grep -q "Raspberry Pi" /proc/cpuinfo; then
+    sudo apt install -y openresolv # necessary for wg-quick on Raspberry Pi
+fi
