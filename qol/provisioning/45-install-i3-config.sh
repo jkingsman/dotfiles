@@ -79,8 +79,9 @@ if ! has_ip_for_type '^(eth|enp|eno|ens|enx)'; then
     sed -i 's/^order += "ethernet _first_"/#&/' ~/.config/i3status/config
 fi
 
-# check if string "Raspberry Pi" is in /proc/cpuinfo and set SW rendering on kitty
-if grep -q "Raspberry Pi" /proc/cpuinfo; then
+# check if we're ARM, set SW rendering on kitty
+ARCH=$(dpkg --print-architecture)
+if [[ "$ARCH" == arm* || "$ARCH" == aarch64 ]]; then
     echo "Using software rendering for kitty"
-    sed -i 's/^bindsym \$mod+Return exec kitty/bindsym \$mod+Return exec bash -c '\''LIBGL_ALWAYS_SOFTWARE=true kitty'\''/' ${HOME}/.config/i3/config
+    sed -i 's/^bindsym \$mod+Return exec kitty/bindsym \$mod+Return exec bash -c '\''LIBGL_ALWAYS_SOFTWARE=true kitty'\''/' "${HOME}/.config/i3/config"
 fi
