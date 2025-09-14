@@ -37,6 +37,10 @@ mkdir -p "${HOME}/.config/i3"
 # Copy i3 config file
 cp "${DOTFILES_DIR}/qol/provisioning/i3.config" "${HOME}/.config/i3/config"
 
+# Copy screen configuration script
+cp "${DOTFILES_DIR}/qol/provisioning/.screen_configure.sh" "${HOME}/.screen_configure.sh"
+chmod +x "${HOME}/.screen_configure.sh"
+
 # move i3status into place
 mkdir -p "${HOME}/.config/i3status"
 cp /etc/i3status.conf "${HOME}/.config/i3status/config"
