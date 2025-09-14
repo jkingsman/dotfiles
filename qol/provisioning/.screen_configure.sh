@@ -9,8 +9,8 @@ if [[ $current_line =~ current[[:space:]]+([0-9]+)[[:space:]]+x[[:space:]]+([0-9
     width="${BASH_REMATCH[1]}"
     height="${BASH_REMATCH[2]}"
     
-    # Check if width is greater than height
-    if [ "$width" -gt "$height" ]; then
+    # Check if width is less than height (portrait orientation)
+    if [ "$width" -lt "$height" ]; then
         sleep 3
         xrandr -o right
         feh --randomize --bg-fill ~/dotfiles/qol/wallpapers/*
