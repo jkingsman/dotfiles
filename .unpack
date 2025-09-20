@@ -36,6 +36,7 @@ git config --global alias.mergemain '!git fetch origin main:main && git merge ma
 git config --global alias.recent '!git for-each-ref --sort=-committerdate refs/heads/ --count=10 --format='"'"'%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'"'"''
 git config --global alias.finmerge '!git add . && git commit --no-edit && git push'
 git config --global alias.rebasemain '!git pull --rebase origin main && git push --force'
+git config --global alias.rebasemaster '!git pull --rebase origin master && git push --force'
 git config --global alias.finrebase '!git add . && GIT_EDITOR=true git rebase --continue && git push --force'
 git config --global alias.showdroppedstash '!git fsck --unreachable | grep commit | cut -d" " -f3 | xargs git log --merges --no-walk --grep=WIP'
 
@@ -43,6 +44,34 @@ echo "Configuring git globals..."
 git config --global --type bool push.autoSetupRemote true
 git config --global pull.rebase true
 git config --global core.autocrlf input
+
+echo "Configuring git diff..."
+# Find diff-highlight location
+if command -v brew &> /dev/null && brew list git &> /dev/null; then
+    # macOS with Homebrew
+    DIFF_HIGHLIGHT="$(brew --prefix git)/share/git-core/contrib/diff-highlight/diff-highlight"
+elif [ -f /usr/share/doc/git/contrib/diff-highlight/diff-highlight ]; then
+    # Common Linux location (Ubuntu/Debian)
+    DIFF_HIGHLIGHT="/usr/share/doc/git/contrib/diff-highlight/diff-highlight"
+elif [ -f /usr/share/git-core/contrib/diff-highlight/diff-highlight ]; then
+    # Alternative Linux location (Fedora/RHEL)
+    DIFF_HIGHLIGHT="/usr/share/git-core/contrib/diff-highlight/diff-highlight"
+else
+    # Try to find it relative to git executable
+    GIT_EXEC_PATH="$(git --exec-path)"
+    DIFF_HIGHLIGHT="${GIT_EXEC_PATH%/libexec/git-core}/share/git-core/contrib/diff-highlight/diff-highlight"
+fi
+
+# Check if diff-highlight exists
+if [ -f "$DIFF_HIGHLIGHT" ]; then
+    LINK_TARGET="${HOME}/.local/bin/diff-highlight"
+    mkdir -p "$(dirname "$LINK_TARGET")"
+
+    git config --global interactive.diffFilter diff-highlight
+    git config --global pager.diff "diff-highlight | less"
+    git config --global pager.log "diff-highlight | less"
+    git config --global pager.show "diff-highlight | less"
+fi
 
 echo "Configuring global git ignores..."
 # Create .config directory if it doesn't exist
