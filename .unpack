@@ -64,13 +64,12 @@ fi
 
 # Check if diff-highlight exists
 if [ -f "$DIFF_HIGHLIGHT" ]; then
-    LINK_TARGET="${HOME}/.local/bin/diff-highlight"
-    mkdir -p "$(dirname "$LINK_TARGET")"
-
-    git config --global interactive.diffFilter diff-highlight
-    git config --global pager.diff "diff-highlight | less"
-    git config --global pager.log "diff-highlight | less"
-    git config --global pager.show "diff-highlight | less"
+    git config --global interactive.diffFilter "perl $DIFF_HIGHLIGHT"
+    git config --global pager.diff "perl $DIFF_HIGHLIGHT | less"
+    git config --global pager.log "perl $DIFF_HIGHLIGHT | less"
+    git config --global pager.show "perl $DIFF_HIGHLIGHT | less"
+else
+   echo "Diff-highlight not found!"
 fi
 
 echo "Configuring global git ignores..."
