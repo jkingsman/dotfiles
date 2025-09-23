@@ -69,7 +69,7 @@ if [ -f "$DIFF_HIGHLIGHT" ]; then
     git config --global pager.log "perl $DIFF_HIGHLIGHT | less"
     git config --global pager.show "perl $DIFF_HIGHLIGHT | less"
 else
-   echo "Diff-highlight not found!"
+   echo "Diff-highlight not found! Maybe you need to cd /usr/share/doc/git/contrib/diff-highlight && sudo make"
 fi
 
 echo "Configuring global git ignores..."
