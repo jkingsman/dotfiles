@@ -35,7 +35,8 @@ sudo apt install -y \
   gnupg \
   apt-transport-https \
   sudo \
-  fontconfig
+  fontconfig \
+  ntpdate
 
 if grep -q "Raspberry Pi" /proc/cpuinfo; then
     sudo apt install -y openresolv # necessary for wg-quick on Raspberry Pi
