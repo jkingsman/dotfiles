@@ -13,6 +13,7 @@ dl() { cd /mnt/d/Downloads 2>/dev/null || cd ~/Downloads; }
 dt() { cd /mnt/d/Desktop 2>/dev/null || cd ~/Desktop; }
 godev() { cd /mnt/d/Projects/Development 2>/dev/null || cd ~/Projects; }
 alias e.="open ."
+alias x="startx"
 
 # ------------------------------------------------------------------
 # Git goodies
