@@ -1,0 +1,48 @@
+Xft.dpi: 120
+
+!
+! AtomOneDarkCustomized
+!
+*.foreground:  #e4eeff
+*.background:  #272c35
+*.cursorColor: #ffffff
+!
+! Black
+*.color0:      #14191e
+*.color8:      #4c4c4c
+!
+! Red
+*.color1:      #d74b43
+*.color9:      #fa6774
+!
+! Green
+*.color2:      #8ec573
+*.color10:     #a1cd81
+!
+! Yellow
+*.color3:      #dd9860
+*.color11:     #edbe73
+!
+! Blue
+*.color4:      #4fb2f7
+*.color12:     #6ebbff
+!
+! Magenta
+*.color5:      #d875e5
+*.color13:     #de85f5
+!
+! Cyan
+*.color6:      #40bac5
+*.color14:     #6fd4e2
+!
+! White
+*.color7:      #a7b6dc
+*.color15:     #ffffff
+!
+! Bold, Italic, Underline
+*.colorBD:     #ffffff
+!*.colorIT:
+*.colorUL:     #a517a3
+
+xterm*faceName: Hasklig Light
+xterm*faceSize: 8

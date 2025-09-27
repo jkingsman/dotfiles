@@ -50,7 +50,10 @@ cp /etc/i3status.conf "${HOME}/.config/i3status/config"
 sudo mkdir -p /etc/X11/xorg.conf.d
 sudo cp "${DOTFILES_DIR}/qol/provisioning/90-touchpad.conf" "/etc/X11/xorg.conf.d/90-touchpad.conf"
 
-echo "Xft.dpi: 120" >> ~/.Xresources
+cp "${DOTFILES_DIR}/qol/provisioning/.xinitrc" "${HOME}/.xinitrc"
+cp "${DOTFILES_DIR}/qol/provisioning/.Xresources" "${HOME}/.Xresources"
+chmod +x "${HOME}/.xinitrc"
+
 
 # Check if battery exists
 has_battery=false
