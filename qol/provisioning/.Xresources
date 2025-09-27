@@ -45,4 +45,4 @@ Xft.dpi: 120
 *.colorUL:     #a517a3
 
 xterm*faceName: Hasklig Light
-xterm*faceSize: 8
+xterm*faceSize: 11
