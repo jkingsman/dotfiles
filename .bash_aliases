@@ -223,6 +223,16 @@ done
 
 alias status="curl -s -o /dev/null -w \"%{http_code}\""
 
+sshuntil() {
+  local host="$1"
+  shift
+  while true; do
+    ssh -o ConnectTimeout=3 "$host" "$@" && break
+    echo "Connection failed, retrying in 1s..."
+    sleep 1
+  done
+}
+
 # ------------------------------------------------------------------
 # Random utilities
 # ------------------------------------------------------------------
