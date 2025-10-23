@@ -24,6 +24,33 @@ mkcd() {
     mkdir -p "$1"
     cd "$1" || return
 }
+# https://codeberg.org/EvanHahn/dotfiles/src/commit/843b9ee13d949d346a4a73ccee2a99351aed285b/home/zsh/.config/zsh/aliases.zsh#L43-L51
+playground () {
+  cd "$(mktemp -d)"
+  chmod -R 0700 .
+  if [[ $# -eq 1 ]]; then
+    \mkdir -p "$1"
+    cd "$1"
+    chmod -R 0700 .
+  fi
+}
+
+# PID + command of a given search term
+function running() {
+  local process_list
+
+  process_list="$(ps -eo 'pid command')"
+
+  if [[ $# != 0 ]]; then
+    process_list="$(echo "$process_list" | grep -Fiw "$@")"
+  fi
+
+  echo "$process_list" |
+    grep -Fv "${BASH_SOURCE[0]}" |
+    grep -Fv grep |
+    GREP_COLORS='mt=00;35' grep -E --colour=auto '^\s*[[:digit:]]+'
+}
+
 
 # ------------------------------------------------------------------
 # Git goodies
@@ -58,6 +85,7 @@ alias gchpc="git add . && git cherry-pick --continue"
 # chmod
 # ------------------------------------------------------------------
 alias mx='chmod a+x'
+alias mkx='chmod a+x'
 alias chmodx='chmod a+x'
 alias 000='chmod -R 000'
 alias 644='chmod -R 644'
@@ -226,9 +254,9 @@ function ips() {
 
 alias setdate="sudo ntpdate -u pool.ntp.org"
 
-# One of @janmoesen’s ProTip™s
+# One of @janmoesen's ProTip™s
 for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
-  alias "${method}"="lwp-request -m '${method}'"
+  alias "${method}"="curl -X ${method}"
 done
 
 alias status="curl -s -o /dev/null -w \"%{http_code}\""
@@ -410,13 +438,6 @@ ebookify(){
         extension="${filename##*.}"
 
         pandoc -f gfm -s "$fullfile" --metadata title="$filename" --metadata pagetitle="$filename" -o "$filename.epub" --epub-title-page=false
-}
-
-# Create a quick playground to work in
-play(){
-  rm -rf /tmp/playground
-  mkdir /tmp/playground
-  cd /tmp/playground
 }
 
 # website cloning
