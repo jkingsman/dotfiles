@@ -12,8 +12,18 @@ db() { cd /mnt/d/Dropbox 2>/dev/null || cd ~/Library/CloudStorage/Dropbox 2>/dev
 dl() { cd /mnt/d/Downloads 2>/dev/null || cd ~/Downloads; }
 dt() { cd /mnt/d/Desktop 2>/dev/null || cd ~/Desktop; }
 godev() { cd /mnt/d/Projects/Development 2>/dev/null || cd ~/Projects; }
-alias e.="open ."
+e.() {
+    if command -v explorer.exe > /dev/null 2>&1; then
+        explorer.exe .
+    else
+        open .
+    fi
+}
 alias x="startx"
+mkcd() {
+    mkdir -p "$1"
+    cd "$1" || return
+}
 
 # ------------------------------------------------------------------
 # Git goodies
