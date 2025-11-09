@@ -7,6 +7,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 PYTHON_VERSION="3.12.0"
 
+# Skip this section if NOPYTHON is set
+if [[ -n "${NOPYTHON}" ]]; then
+  echo "NOPYTHON is set, skipping Python installation."
+  exit 0
+fi
+
 # Install pyenv dependencies
 sudo apt update
 sudo apt install -y make build-essential libssl-dev zlib1g-dev \

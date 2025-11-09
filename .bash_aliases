@@ -12,8 +12,45 @@ db() { cd /mnt/d/Dropbox 2>/dev/null || cd ~/Library/CloudStorage/Dropbox 2>/dev
 dl() { cd /mnt/d/Downloads 2>/dev/null || cd ~/Downloads; }
 dt() { cd /mnt/d/Desktop 2>/dev/null || cd ~/Desktop; }
 godev() { cd /mnt/d/Projects/Development 2>/dev/null || cd ~/Projects; }
-alias e.="open ."
+e.() {
+    if command -v explorer.exe > /dev/null 2>&1; then
+        explorer.exe .
+    else
+        open .
+    fi
+}
 alias x="startx"
+mkcd() {
+    mkdir -p "$1"
+    cd "$1" || return
+}
+# https://codeberg.org/EvanHahn/dotfiles/src/commit/843b9ee13d949d346a4a73ccee2a99351aed285b/home/zsh/.config/zsh/aliases.zsh#L43-L51
+playground () {
+  cd "$(mktemp -d)"
+  chmod -R 0700 .
+  if [[ $# -eq 1 ]]; then
+    \mkdir -p "$1"
+    cd "$1"
+    chmod -R 0700 .
+  fi
+}
+
+# PID + command of a given search term
+function running() {
+  local process_list
+
+  process_list="$(ps -eo 'pid command')"
+
+  if [[ $# != 0 ]]; then
+    process_list="$(echo "$process_list" | grep -Fiw "$@")"
+  fi
+
+  echo "$process_list" |
+    grep -Fv "${BASH_SOURCE[0]}" |
+    grep -Fv grep |
+    GREP_COLORS='mt=00;35' grep -E --colour=auto '^\s*[[:digit:]]+'
+}
+
 
 # ------------------------------------------------------------------
 # Git goodies
@@ -48,6 +85,7 @@ alias gchpc="git add . && git cherry-pick --continue"
 # chmod
 # ------------------------------------------------------------------
 alias mx='chmod a+x'
+alias mkx='chmod a+x'
 alias chmodx='chmod a+x'
 alias 000='chmod -R 000'
 alias 644='chmod -R 644'
@@ -216,12 +254,22 @@ function ips() {
 
 alias setdate="sudo ntpdate -u pool.ntp.org"
 
-# One of @janmoesen’s ProTip™s
+# One of @janmoesen's ProTip™s
 for method in GET HEAD POST PUT DELETE TRACE OPTIONS; do
-  alias "${method}"="lwp-request -m '${method}'"
+  alias "${method}"="curl -X ${method}"
 done
 
 alias status="curl -s -o /dev/null -w \"%{http_code}\""
+
+sshuntil() {
+  local host="$1"
+  shift
+  while true; do
+    ssh -o ConnectTimeout=3 "$host" "$@" && break
+    echo "Connection failed, retrying in 1s..."
+    sleep 1
+  done
+}
 
 # ------------------------------------------------------------------
 # Random utilities
@@ -390,13 +438,6 @@ ebookify(){
         extension="${filename##*.}"
 
         pandoc -f gfm -s "$fullfile" --metadata title="$filename" --metadata pagetitle="$filename" -o "$filename.epub" --epub-title-page=false
-}
-
-# Create a quick playground to work in
-play(){
-  rm -rf /tmp/playground
-  mkdir /tmp/playground
-  cd /tmp/playground
 }
 
 # website cloning

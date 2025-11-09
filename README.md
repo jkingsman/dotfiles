@@ -23,6 +23,11 @@ Quick provision:
 git clone https://github.com/jkingsman/dotfiles.git; cd dotfiles/qol/provisioning/; bash ./provision.sh
 ```
 
+Cloud provision:
+```
+curl https://raw.githubusercontent.com/jkingsman/dotfiles/refs/heads/main/qol/provisioning/cloud-init.sh | sh
+```
+
 Quick clone:
 
 ```
