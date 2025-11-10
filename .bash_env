@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------
 
 # add ~/.local and kitty to path
-export PATH="$HOME/.local/bin:$HOME/.local/kitty.app/bin:/usr/loca/go/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.local/kitty.app/bin:/usr/local/go/bin:$PATH"
 
 # swap caps and escape where supported
 command -v setxkbmap >/dev/null 2>&1 && setxkbmap -option caps:escape >/dev/null 2>&1
