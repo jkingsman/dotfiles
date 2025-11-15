@@ -174,15 +174,15 @@ alias srv3="python -m SimpleHTTPServer || python -m http.server 8000 || python3 
 # Dropbox meta
 # ------------------------------------------------------------------
 dbpull() {
-  scp "jack@192.168.1.100:/D:/Dropbox/$1" "$1"
+  scp -rp "jack@192.168.1.100:/D:/Dropbox/$1" "$1"
 }
 
 dbpush() {
-  scp "$1" "jack@192.168.1.100:/D:/Dropbox/"
+  scp -rp "$1" "jack@192.168.1.100:/D:/Dropbox/"
 }
 
 dbls() {
-  ssh "jack@192.168.1.100" "ubuntu run ls /mnt/d/Dropbox/"
+  ssh "jack@192.168.1.100" "ubuntu run ls /mnt/d/Dropbox/$1"
 }
 
 # ------------------------------------------------------------------
