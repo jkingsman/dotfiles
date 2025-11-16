@@ -272,10 +272,136 @@ sshuntil() {
 }
 
 # ------------------------------------------------------------------
+# Date/time conversion utilities
+# ------------------------------------------------------------------
+
+pt2utc() {
+    local input="$*"
+    local current_date
+    local current_year
+    current_date=$(date +%Y-%m-%d)
+    current_year=$(date +%Y)
+    local datetime
+    local format_type
+
+    # Detect format and normalize
+    if [[ "$input" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}\ [0-9]{2}:[0-9]{2}$ ]]; then
+        # YYYY-MM-DD HH:MM
+        datetime="$input"
+        format_type="full"
+    elif [[ "$input" =~ ^[0-9]{2}/[0-9]{2}\ [0-9]{2}:[0-9]{2}$ ]]; then
+        # MM/DD HH:MM
+        datetime="$current_year-${input:0:2}-${input:3:2} ${input:6:5}"
+        format_type="full"
+    elif [[ "$input" =~ ^[0-9]{2}:[0-9]{2}$ ]]; then
+        # HH:MM
+        datetime="$current_date $input"
+        format_type="time"
+    elif [[ "$input" =~ ^[0-9]{4}$ ]]; then
+        # HHMM
+        datetime="$current_date ${input:0:2}:${input:2:2}"
+        format_type="time"
+    else
+        echo "Error: Invalid format. Use YYYY-MM-DD HH:MM, MM/DD HH:MM, HH:MM, or HHMM"
+        return 1
+    fi
+
+    # Convert PT to UTC
+    local pt_epoch
+    pt_epoch=$(TZ="America/Los_Angeles" date -d "$datetime" +%s 2>/dev/null)
+    if [ $? -ne 0 ] || [ -z "$pt_epoch" ]; then
+        echo "Error: Invalid date/time"
+        return 1
+    fi
+
+    local utc_datetime
+    utc_datetime=$(TZ="UTC" date -d "@$pt_epoch" "+%Y-%m-%d %H:%M")
+
+    if [ "$format_type" = "time" ]; then
+        local pt_date utc_date utc_time
+        pt_date=$(TZ="America/Los_Angeles" date -d "$datetime" +%Y%m%d)
+        utc_date=$(TZ="UTC" date -d "@$pt_epoch" +%Y%m%d)
+        utc_time=$(TZ="UTC" date -d "@$pt_epoch" +%H:%M)
+
+        # Determine day relationship by comparing date integers
+        if (( utc_date == pt_date )); then
+            echo "$utc_time (same day)"
+        elif (( utc_date > pt_date )); then
+            echo "$utc_time (next day)"
+        else
+            echo "$utc_time (previous day)"
+        fi
+    else
+        echo "$utc_datetime UTC"
+    fi
+}
+
+utc2pt() {
+    local input="$*"
+    local current_date
+    local current_year
+    # Use current date/year in UTC for UTC inputs
+    current_date=$(TZ=UTC date +%Y-%m-%d)
+    current_year=$(TZ=UTC date +%Y)
+    local datetime
+    local format_type
+
+    # Detect format and normalize
+    if [[ "$input" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}\ [0-9]{2}:[0-9]{2}$ ]]; then
+        # YYYY-MM-DD HH:MM
+        datetime="$input"
+        format_type="full"
+    elif [[ "$input" =~ ^[0-9]{2}/[0-9]{2}\ [0-9]{2}:[0-9]{2}$ ]]; then
+        # MM/DD HH:MM
+        datetime="$current_year-${input:0:2}-${input:3:2} ${input:6:5}"
+        format_type="full"
+    elif [[ "$input" =~ ^[0-9]{2}:[0-9]{2}$ ]]; then
+        # HH:MM
+        datetime="$current_date $input"
+        format_type="time"
+    elif [[ "$input" =~ ^[0-9]{4}$ ]]; then
+        # HHMM
+        datetime="$current_date ${input:0:2}:${input:2:2}"
+        format_type="time"
+    else
+        echo "Error: Invalid format. Use YYYY-MM-DD HH:MM, MM/DD HH:MM, HH:MM, or HHMM"
+        return 1
+    fi
+
+    # Convert UTC to PT
+    local utc_epoch
+    utc_epoch=$(TZ="UTC" date -d "$datetime" +%s 2>/dev/null)
+    if [ $? -ne 0 ] || [ -z "$utc_epoch" ]; then
+        echo "Error: Invalid date/time"
+        return 1
+    fi
+
+    local pt_datetime
+    pt_datetime=$(TZ="America/Los_Angeles" date -d "@$utc_epoch" "+%Y-%m-%d %H:%M")
+
+    if [ "$format_type" = "time" ]; then
+        local utc_date pt_date pt_time
+        utc_date=$(TZ="UTC" date -d "$datetime" +%Y%m%d)
+        pt_date=$(TZ="America/Los_Angeles" date -d "@$utc_epoch" +%Y%m%d)
+        pt_time=$(TZ="America/Los_Angeles" date -d "@$utc_epoch" +%H:%M)
+
+        # Determine day relationship by comparing date integers
+        if (( pt_date == utc_date )); then
+            echo "$pt_time (same day)"
+        elif (( pt_date > utc_date )); then
+            echo "$pt_time (next day)"
+        else
+            echo "$pt_time (previous day)"
+        fi
+    else
+        echo "$pt_datetime PT"
+    fi
+}
+
+# ------------------------------------------------------------------
 # Random utilities
 # ------------------------------------------------------------------
-alias where="find . | grep -i"
-alias searchcase="grep -rnw . -e"
+alias where="find . | grep -i" # find files by name
 alias search="grep -irnw . -e" # case insensitive contents grep
 
 yamldump() {
