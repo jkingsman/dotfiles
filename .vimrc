@@ -23,7 +23,11 @@ set number                    " Show line numbers
 set ruler                     " Show cursor position
 set laststatus=2              " Always show status line
 set scrolloff=4               " Keep 4 lines visible when scrolling
-set nowrap                    " Don't wrap long lines
+set wrap
+set linebreak
+set showbreak
+set breakindent
+set mouse=a
 set wildmenu                  " Enhanced command completion
 set wildmode=list:longest,full " Command completion behavior
 
