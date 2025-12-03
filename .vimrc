@@ -24,6 +24,11 @@ set ruler                     " Show cursor position
 set laststatus=2              " Always show status line
 set scrolloff=4               " Keep 4 lines visible when scrolling
 set nowrap                    " Don't wrap long lines
+" set showbreak=↪\
+" set breakindent
+autocmd FileType markdown,text setlocal linebreak wrap
+set mouse=a
+set listchars=extends:>,precedes:<
 set wildmenu                  " Enhanced command completion
 set wildmode=list:longest,full " Command completion behavior
 
@@ -69,8 +74,8 @@ if !empty(globpath(&rtp, 'autoload/plug.vim'))
   Plug 'joshdick/onedark.vim'
 
   " File explorer
-  Plug 'preservim/nerdtree'
-  Plug 'Xuyuanp/nerdtree-git-plugin'
+  " Plug 'preservim/nerdtree'
+  " Plug 'Xuyuanp/nerdtree-git-plugin'
 
   " Fuzzy finder
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -82,9 +87,9 @@ if !empty(globpath(&rtp, 'autoload/plug.vim'))
   colorscheme onedark
 
   " NERDTree configuration
-  let g:NERDTreeMouseMode=2
-  autocmd VimEnter * NERDTree | wincmd p
-  autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+  " let g:NERDTreeMouseMode=2
+  " autocmd VimEnter * NERDTree | wincmd p
+  " autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 endif
 
 " ===================================================================
