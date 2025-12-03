@@ -74,8 +74,8 @@ if !empty(globpath(&rtp, 'autoload/plug.vim'))
   Plug 'joshdick/onedark.vim'
 
   " File explorer
-  Plug 'preservim/nerdtree'
-  Plug 'Xuyuanp/nerdtree-git-plugin'
+  " Plug 'preservim/nerdtree'
+  " Plug 'Xuyuanp/nerdtree-git-plugin'
 
   " Fuzzy finder
   Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -87,9 +87,9 @@ if !empty(globpath(&rtp, 'autoload/plug.vim'))
   colorscheme onedark
 
   " NERDTree configuration
-  let g:NERDTreeMouseMode=2
-  autocmd VimEnter * NERDTree | wincmd p
-  autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+  " let g:NERDTreeMouseMode=2
+  " autocmd VimEnter * NERDTree | wincmd p
+  " autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 endif
 
 " ===================================================================
