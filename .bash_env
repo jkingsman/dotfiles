@@ -291,7 +291,7 @@ fi
 
 
 # path management
-export CDPATH=":.:/mnt/d/Projects/Development/:/home/jack:/home/jkingsman/:/home/jkingsman/code/:/mnt/d/:~:$CDPATH"
+export CDPATH=":.:/mnt/d/Projects/Development/:/mnt/d/Desktop:/home/jack:/home/jkingsman/:/home/jkingsman/code/:/mnt/d/:~:$CDPATH"
 
 # ------------------------------------------------------------------
 # Bash backups
