@@ -39,6 +39,7 @@ git config --global alias.rebasemain '!git pull --rebase origin main && git push
 git config --global alias.rebasemaster '!git pull --rebase origin master && git push --force'
 git config --global alias.finrebase '!git add . && GIT_EDITOR=true git rebase --continue && git push --force'
 git config --global alias.showdroppedstash '!git fsck --unreachable | grep commit | cut -d" " -f3 | xargs git log --merges --no-walk --grep=WIP'
+git config --global alias.popcommit '!git reset --soft HEAD^'
 
 echo "Configuring git globals..."
 git config --global --type bool push.autoSetupRemote true
