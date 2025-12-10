@@ -85,9 +85,27 @@ prompt_git() {
     fi;
 }
 
+# covered in .bash_aliases but want to use global here for slow dir checking
+command -v md5sum > /dev/null || alias md5sum="md5"
+SLOW_GIT_PATH_HASHES=("fe7a4d6c6535de32353220ba9c5ab901")
+
 prompt_git_with_timeout() {
     local timeout=1
     local result
+
+    # Check if current directory hash is in the slow list
+    local current_hash=$(pwd | md5sum | awk '{print $1}')
+    for slow_hash in "${SLOW_GIT_PATH_HASHES[@]}"; do
+        if [[ "$current_hash" == "$slow_hash" ]]; then
+            # Skip git operations for known slow repos
+            branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
+            git rev-parse --short HEAD 2> /dev/null || \
+            echo '(unknown)')";
+
+            echo -e "${1}${branchName}${2}[slow repo]"
+            return
+        fi
+    done
 
     # Run prompt_git in background and capture its PID
     result=$(
@@ -245,26 +263,8 @@ generate_prompt_body() {
   echo -e "${bold}${userStyle}${user}${white}${reset} at ${bold}${is_atlas}${hostStyle}${host}${white}${reset} in ${bold}${green}${path}${git_info}${reset}"
 }
 
-get_right_prompt() {
-  local time_str="${lightgray}[$(date +'%T')L][$(date -u +'%T')Z][$(date +%s)]${reset}"
-
-  local colored_prompt="$(generate_prompt_body)"
-  # Strip ANSI escape codes
-  local plain_prompt="$(echo -e "$colored_prompt" | sed -r 's/\x1B\[[0-9;]*[mK]//g')"
-
-  local cols="${COLUMNS:-80}"
-  local left_len="${#plain_prompt}"
-  local time_len="$(echo -n "$time_str" | sed -r 's/\x1B\[[0-9;]*[mK]//g' | wc -c)"
-
-  local spaces=$(( cols - left_len - time_len )) # +N to account for control chars left in I guess? this was inconsistent with git/non-git dirs, so meh
-  [ "$spaces" -lt 1 ] && spaces=1
-
-  printf '%*s%s' "$spaces" '' "$time_str"
-}
-
 PS1="\[\033]0;\W\007\]\n"   # terminal title
 PS1+="\[\$(generate_time)\] \[\$(generate_prompt_body)\]"
-# PS1+="\[\$(get_right_prompt)\]" # just keep a boring left-aligned prompt for now
 PS1+="${reset}\n"
 
 if [ -n "${NO_VI_MODE}" ]; then
