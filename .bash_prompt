@@ -87,7 +87,7 @@ prompt_git() {
 
 # covered in .bash_aliases but want to use global here for slow dir checking
 command -v md5sum > /dev/null || alias md5sum="md5"
-SLOW_GIT_PATH_HASHES=("fe7a4d6c6535de32353220ba9c5ab901")
+SLOW_GIT_PATH_HASHES=("fe7a4d6c6535de32353220ba9c5ab901" "d7c8bff40b1a78f666b369efa6567661")
 
 prompt_git_with_timeout() {
     local timeout=1
