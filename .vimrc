@@ -27,7 +27,7 @@ set nowrap                    " Don't wrap long lines
 " set showbreak=↪\
 " set breakindent
 autocmd FileType markdown,text setlocal linebreak wrap
-set mouse=a
+set mouse=
 set listchars=extends:>,precedes:<
 set wildmenu                  " Enhanced command completion
 set wildmode=list:longest,full " Command completion behavior
