@@ -245,6 +245,33 @@ enablenvm(){
   fi
 }
 
+
+# Wrapper for `npm` that enables nvm when system `npm` is missing
+# or resolves to a Windows installation under /mnt/c (e.g. "Program Files").
+npm() {
+  local npm_bin
+  npm_bin=$(type -P npm 2>/dev/null || true)
+
+  # If no npm or it points to /mnt/c or "Program Files", enable nvm
+  if [ -z "$npm_bin" ] || echo "$npm_bin" | grep -q -E '/mnt/c/|/cygdrive/c/|Program Files'; then
+    enablenvm
+    npm_bin=$(type -P npm 2>/dev/null || true)
+    if [ -z "$npm_bin" ]; then
+      echo "npm: command not found after enabling nvm" >&2
+      return 127
+    fi
+  fi
+
+  # Execute the resolved binary (bypass this function)
+  if [ -x "$npm_bin" ]; then
+    "$npm_bin" "$@"
+  else
+    # fallback to command lookup if path isn't executable
+    command npm "$@"
+  fi
+}
+
+
 # Pyenv setup - check if pyenv directory exists
 if [[ -d "$HOME/.pyenv" ]]; then
     export PYENV_ROOT="$HOME/.pyenv"
