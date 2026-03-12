@@ -377,3 +377,5 @@ restore_bash_history() {
 }
 
 [ -f "$HOME/.bash_history_eternal" ] && backup_bash_history
+
+export GPG_TTY=$(tty)
