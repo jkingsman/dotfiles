@@ -528,7 +528,8 @@ command -v md5sum > /dev/null || alias md5sum="md5"
 command -v sha1sum > /dev/null || alias sha1sum="shasum"
 
 # Run claude command with NVM enabled
-alias c="enablenvm && claude"
+alias c="enablenvm && claude --dangerously-skip-permissions"
+alias cx="enablenvm && codex --sandbox danger-full-access"
 
 # unpack encrypted ssh key
 alias unpacksshkey='cd ~/.ssh; gpg -d --output id_ed25519 id_ed25519.gpg; chmod 600 id_ed25519'
