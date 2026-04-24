@@ -245,6 +245,10 @@ enablenvm(){
   fi
 }
 
+# Auto-enable nvm on all machines except the excluded host
+if [[ "$(echo -n "$(hostname)" | { sha256sum 2>/dev/null || shasum -a 256; } | awk '{print $1}')" != "570380b210d734f1c4418bdda985a497c264d448d744a32e9968690cefda72e5" ]]; then
+  enablenvm
+fi
 
 # Wrapper for `npm` that enables nvm when system `npm` is missing
 # or resolves to a Windows installation under /mnt/c (e.g. "Program Files").
