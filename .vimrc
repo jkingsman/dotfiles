@@ -65,34 +65,6 @@ if empty($TMUX)
 endif
 
 " ===================================================================
-" PLUGIN MANAGEMENT (vim-plug)
-" ===================================================================
-if !empty(globpath(&rtp, 'autoload/plug.vim'))
-  call plug#begin()
-
-  " Theme
-  Plug 'joshdick/onedark.vim'
-
-  " File explorer
-  " Plug 'preservim/nerdtree'
-  " Plug 'Xuyuanp/nerdtree-git-plugin'
-
-  " Fuzzy finder
-  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-  Plug 'junegunn/fzf.vim'
-
-  call plug#end()
-
-  " Load theme after plugins
-  colorscheme onedark
-
-  " NERDTree configuration
-  " let g:NERDTreeMouseMode=2
-  " autocmd VimEnter * NERDTree | wincmd p
-  " autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-endif
-
-" ===================================================================
 " KEY MAPPINGS
 " ===================================================================
 " Window navigation
@@ -104,11 +76,6 @@ nnoremap <C-Up> :buffers<cr>:buffer<space>
 noremap <C-h> <C-w>w
 nnoremap <C-l> <C-w>W
 nnoremap <C-k> :buffers<cr>:buffer<space>
-
-" FZF file search (only if plugin loaded)
-if !empty(globpath(&rtp, 'plugged/fzf.vim'))
-  nnoremap <C-p> :Files<CR>
-endif
 
 " Code commenting
 noremap <silent> cc :<C-B>silent <C-E>s/^/<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:nohlsearch<CR>
