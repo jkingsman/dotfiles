@@ -403,7 +403,7 @@ utc2pt() {
 # ------------------------------------------------------------------
 alias where="find . | grep -i" # find files by name
 alias search="grep -irnw . -e" # case insensitive contents grep
-
+alias kill9="kill -9"
 yamldump() {
   # stupid but yaml parsing holds the anchors until you resolve the object
   local output=$(python3 -c "import yaml; import json; print(yaml.safe_dump(json.loads(json.dumps(yaml.safe_load(open('$1', 'r'))))))")
