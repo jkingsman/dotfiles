@@ -298,17 +298,23 @@ fi
 [[ -d "$HOME/.yarn/bin" ]] && export PATH="$HOME/.yarn/bin:$PATH"
 [[ -d "$HOME/.config/yarn/global/node_modules/.bin" ]] && export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
-# FZF ctrl+r
-[ -f ~/.fzf/shell/key-bindings.bash ] &&
-# if key-bindings.bash is not found, add $HOME/.fzf/bin to the PATH
+# FZF ctrl+r — supports git-clone install (~/.fzf) or Homebrew (arm64/x86)
 if [[ -d "$HOME/.fzf/bin" ]]; then
     export PATH="$HOME/.fzf/bin:$PATH"
-    export FZF_CTRL_T_COMMAND=
-    source ~/.fzf/shell/key-bindings.bash
+    _fzf_bindings="$HOME/.fzf/shell/key-bindings.bash"
+elif [[ -f "/opt/homebrew/opt/fzf/shell/key-bindings.bash" ]]; then
+    _fzf_bindings="/opt/homebrew/opt/fzf/shell/key-bindings.bash"
+elif [[ -f "/usr/local/opt/fzf/shell/key-bindings.bash" ]]; then
+    _fzf_bindings="/usr/local/opt/fzf/shell/key-bindings.bash"
+fi
 
-    # "?" toggles preview to show multiline/wrapped comands
+if [[ -n "${_fzf_bindings:-}" ]]; then
+    export FZF_CTRL_T_COMMAND=
+    source "$_fzf_bindings"
+    # "?" toggles preview to show multiline/wrapped commands
     export FZF_CTRL_R_OPTS="${FZF_CTRL_R_OPTS:+$FZF_CTRL_R_OPTS }--preview 'echo {}' --preview-window down:5:hidden:wrap --bind '?:toggle-preview'"
 fi
+unset _fzf_bindings
 
 
 # path management
