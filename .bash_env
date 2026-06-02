@@ -214,16 +214,6 @@ alias lsl="ls ${colorflag} -lath"
 # NVM, RVM, pyenv, and utility enablement
 # ------------------------------------------------------------------
 
-# vimplug but offline-safe
-if [[ ! -d "$HOME/.vim" || ! -d "$HOME/.vim/autoload" || ! -f "$HOME/.vim/autoload/plug.vim" ]]; then
-    # Create ~/.vim if it doesn't exist
-    [[ -d "$HOME/.vim" ]] || mkdir -p "$HOME/.vim"
-    # Check for network connectivity before attempting download
-    if ping -c 1 github.com >/dev/null 2>&1 || ping -n 1 github.com >/dev/null 2>&1; then
-        curl -fLo "$HOME/.vim/autoload/plug.vim" --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-        vim +PlugInstall +qall
-    fi
-fi
 
 # Homebrew setup - check if brew exists first
 if command -v /opt/homebrew/bin/brew >/dev/null 2>&1; then
@@ -244,6 +234,37 @@ enablenvm(){
       [[ -s "$NVM_DIR/bash_completion" ]] && \. "$NVM_DIR/bash_completion" 2>/dev/null || true
   fi
 }
+
+# Auto-enable nvm on all machines except the excluded host
+if [[ "$(echo -n "$(hostname)" | { sha256sum 2>/dev/null || shasum -a 256; } | awk '{print $1}')" != "570380b210d734f1c4418bdda985a497c264d448d744a32e9968690cefda72e5" ]]; then
+  enablenvm
+fi
+
+# Wrapper for `npm` that enables nvm when system `npm` is missing
+# or resolves to a Windows installation under /mnt/c (e.g. "Program Files").
+npm() {
+  local npm_bin
+  npm_bin=$(type -P npm 2>/dev/null || true)
+
+  # If no npm or it points to /mnt/c or "Program Files", enable nvm
+  if [ -z "$npm_bin" ] || echo "$npm_bin" | grep -q -E '/mnt/c/|/cygdrive/c/|Program Files'; then
+    enablenvm
+    npm_bin=$(type -P npm 2>/dev/null || true)
+    if [ -z "$npm_bin" ]; then
+      echo "npm: command not found after enabling nvm" >&2
+      return 127
+    fi
+  fi
+
+  # Execute the resolved binary (bypass this function)
+  if [ -x "$npm_bin" ]; then
+    "$npm_bin" "$@"
+  else
+    # fallback to command lookup if path isn't executable
+    command npm "$@"
+  fi
+}
+
 
 # Pyenv setup - check if pyenv directory exists
 if [[ -d "$HOME/.pyenv" ]]; then
@@ -277,21 +298,27 @@ fi
 [[ -d "$HOME/.yarn/bin" ]] && export PATH="$HOME/.yarn/bin:$PATH"
 [[ -d "$HOME/.config/yarn/global/node_modules/.bin" ]] && export PATH="$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
-# FZF ctrl+r
-[ -f ~/.fzf/shell/key-bindings.bash ] &&
-# if key-bindings.bash is not found, add $HOME/.fzf/bin to the PATH
+# FZF ctrl+r — supports git-clone install (~/.fzf) or Homebrew (arm64/x86)
 if [[ -d "$HOME/.fzf/bin" ]]; then
     export PATH="$HOME/.fzf/bin:$PATH"
-    export FZF_CTRL_T_COMMAND=
-    source ~/.fzf/shell/key-bindings.bash
+    _fzf_bindings="$HOME/.fzf/shell/key-bindings.bash"
+elif [[ -f "/opt/homebrew/opt/fzf/shell/key-bindings.bash" ]]; then
+    _fzf_bindings="/opt/homebrew/opt/fzf/shell/key-bindings.bash"
+elif [[ -f "/usr/local/opt/fzf/shell/key-bindings.bash" ]]; then
+    _fzf_bindings="/usr/local/opt/fzf/shell/key-bindings.bash"
+fi
 
-    # "?" toggles preview to show multiline/wrapped comands
+if [[ -n "${_fzf_bindings:-}" ]]; then
+    export FZF_CTRL_T_COMMAND=
+    source "$_fzf_bindings"
+    # "?" toggles preview to show multiline/wrapped commands
     export FZF_CTRL_R_OPTS="${FZF_CTRL_R_OPTS:+$FZF_CTRL_R_OPTS }--preview 'echo {}' --preview-window down:5:hidden:wrap --bind '?:toggle-preview'"
 fi
+unset _fzf_bindings
 
 
 # path management
-export CDPATH=":.:/mnt/d/Projects/Development/:/mnt/d/Desktop:/home/jack:/home/jkingsman/:/home/jkingsman/code/:/mnt/d/:~:$CDPATH"
+export CDPATH=":.:~:/mnt/d/Projects/Development/:/mnt/d/Desktop/:/home/jack/Desktop/:/home/jkingsman/Desktop/:/Users/jack/Desktop/:/Users/jack/:/home/jack/:/home/jkingsman/:/home/jkingsman/code/:/mnt/d/:$CDPATH"
 
 # ------------------------------------------------------------------
 # Bash backups
@@ -350,3 +377,5 @@ restore_bash_history() {
 }
 
 [ -f "$HOME/.bash_history_eternal" ] && backup_bash_history
+
+export GPG_TTY=$(tty)

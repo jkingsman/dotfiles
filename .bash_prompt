@@ -90,21 +90,27 @@ command -v md5sum > /dev/null || alias md5sum="md5"
 SLOW_GIT_PATH_HASHES=("fe7a4d6c6535de32353220ba9c5ab901" "d7c8bff40b1a78f666b369efa6567661" "df048b9ed177b7337e46363ec0537967")
 
 prompt_git_with_timeout() {
-    local timeout=1
+    local timeout=2
     local result
 
-    # Check if current directory hash is in the slow list
-    local current_hash=$(pwd | md5sum | awk '{print $1}')
-    for slow_hash in "${SLOW_GIT_PATH_HASHES[@]}"; do
-        if [[ "$current_hash" == "$slow_hash" ]]; then
-            # Skip git operations for known slow repos
-            branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
-            git rev-parse --short HEAD 2> /dev/null || \
-            echo '(unknown)')";
+    # Check if the current directory (or any ancestor) hash is in the slow
+    # list, so children of a slow path are skipped too.
+    local check_path="$(pwd)"
+    while [[ -n "$check_path" ]]; do
+        local current_hash=$(echo "$check_path" | md5sum | awk '{print $1}')
+        for slow_hash in "${SLOW_GIT_PATH_HASHES[@]}"; do
+            if [[ "$current_hash" == "$slow_hash" ]]; then
+                # Skip git operations for known slow repos
+                branchName="$(git symbolic-ref --quiet --short HEAD 2> /dev/null || \
+                git rev-parse --short HEAD 2> /dev/null || \
+                echo '(unknown)')";
 
-            echo -e "${1}${branchName}${2}[slow repo]"
-            return
-        fi
+                echo -e "${1}${branchName}${2}[slow repo]"
+                return
+            fi
+        done
+        [[ "$check_path" == "/" ]] && break
+        check_path="$(dirname "$check_path")"
     done
 
     # Run prompt_git in background and capture its PID

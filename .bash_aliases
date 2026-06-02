@@ -403,7 +403,7 @@ utc2pt() {
 # ------------------------------------------------------------------
 alias where="find . | grep -i" # find files by name
 alias search="grep -irnw . -e" # case insensitive contents grep
-
+alias kill9="kill -9"
 yamldump() {
   # stupid but yaml parsing holds the anchors until you resolve the object
   local output=$(python3 -c "import yaml; import json; print(yaml.safe_dump(json.loads(json.dumps(yaml.safe_load(open('$1', 'r'))))))")
@@ -528,7 +528,8 @@ command -v md5sum > /dev/null || alias md5sum="md5"
 command -v sha1sum > /dev/null || alias sha1sum="shasum"
 
 # Run claude command with NVM enabled
-alias c="enablenvm && claude"
+alias c="enablenvm && claude --dangerously-skip-permissions"
+alias cx="enablenvm && codex --sandbox danger-full-access"
 
 # unpack encrypted ssh key
 alias unpacksshkey='cd ~/.ssh; gpg -d --output id_ed25519 id_ed25519.gpg; chmod 600 id_ed25519'
